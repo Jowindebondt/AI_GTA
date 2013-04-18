@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace GTA
 {
@@ -16,6 +18,7 @@ namespace GTA
         public float MaxTurnRate { get; set; }
 
         public abstract override void Update(TimeSpan timeElapsed);
-        public abstract override void Render();
+        public abstract override void Render(SpriteBatch spriteBatch);
+        public abstract override void Load(GraphicsDevice graphicsDevice, ContentManager content);
     }
 }

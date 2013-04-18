@@ -2,14 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace GTA
 {
     abstract class Person : MovingEntity
     {
-        public abstract override void Update(TimeSpan timeElapsed);
-        public abstract override void Render();
+        public AnimatedTexture _personTexture = new AnimatedTexture(Vector2.Zero, 1, 1, 0);
+        public const int Frames = 3;
+        public const int FramesPerSec = 5;
 
+        public abstract override void Update(TimeSpan timeElapsed);
+        public abstract override void Render(SpriteBatch spriteBatch);
+        public abstract override void Load(GraphicsDevice graphicsDevice, ContentManager content);
     }
 }

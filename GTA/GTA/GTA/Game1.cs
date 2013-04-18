@@ -37,8 +37,7 @@ namespace GTA
 
         public Game1()
         {
-            
-            _personTexture = new AnimatedTexture(Vector2.Zero, Rotation, Scale, Depth);
+            //_personTexture = new AnimatedTexture(Vector2.Zero, Rotation, Scale, Depth);
             _carTexture = new AnimatedTexture(Vector2.Zero, Rotation, Scale, Depth);
             TargetElapsedTime = TimeSpan.FromSeconds(1/30.0);
 
@@ -95,14 +94,14 @@ namespace GTA
             // Create a new SpriteBatch, which can be used to draw textures.
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            _personTexture.Load(GraphicsDevice, Content, "people2", Frames, FramesPerSec);
-            _carTexture.Load(GraphicsDevice, Content, "Cars", Frames, FramesPerSec);
+            //_personTexture.Load(GraphicsDevice, Content, "people2", Frames, FramesPerSec);
+            //_carTexture.Load(GraphicsDevice, Content, "Cars", Frames, FramesPerSec);
 
             viewport = GraphicsDevice.Viewport;
 
             shipPos = new Vector2(32, 32); //x and y location to print on screen
-       
             
+            _world.Load(GraphicsDevice, Content);
 
             // TODO: use this.Content to load your game content here
         }
@@ -116,15 +115,8 @@ namespace GTA
             // TODO: Unload any non ContentManager content here
         }
 
-        /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        protected override void Update(GameTime gameTime)
+        private void KeyPresses(KeyboardState key)
         {
-            // Allows the game to exit
-            var key = Keyboard.GetState();
             if (key.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Escape))
                 Exit();
 
@@ -134,17 +126,28 @@ namespace GTA
                 {
                     KeyDown = true;
                     _graphics.ToggleFullScreen();
-                    IsMouseVisible = !IsMouseVisible;
                 }
             }
 
             if (key.IsKeyUp(Microsoft.Xna.Framework.Input.Keys.F))
                 KeyDown = false;
+        }
 
-            float elapsed = (float) gameTime.ElapsedGameTime.TotalSeconds;
+        /// <summary>
+        /// Allows the game to run logic such as updating the world,
+        /// checking for collisions, gathering input, and playing audio.
+        /// </summary>
+        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        protected override void Update(GameTime gameTime)
+        {
+            // Allows the game to exit
+            var key = Keyboard.GetState();
+            KeyPresses(key);
+
+            var elapsed = (float) gameTime.ElapsedGameTime.TotalSeconds;
             // TODO: Add your update logic here
-            _personTexture.UpdateFrame(elapsed);
-            _carTexture.UpdateFrame(elapsed);
+            //_personTexture.UpdateFrame(elapsed);
+            //_carTexture.UpdateFrame(elapsed);
 
             _world.Update(gameTime.ElapsedGameTime);
 
@@ -160,11 +163,8 @@ namespace GTA
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
-            _world.Render();
-
-            _spriteBatch.Begin();
-            _personTexture.DrawFrame(_spriteBatch, shipPos);
-            //_carTexture.DrawFrame(_spriteBatch, shipPos);
+            _spriteBatch.Begin(); 
+            _world.Render(_spriteBatch);
             _spriteBatch.End();
 
             base.Draw(gameTime);

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace GTA
 {
@@ -14,6 +16,7 @@ namespace GTA
         public float Bradius { get; set; }
 
         public abstract void Update(TimeSpan timeElapsed);
-        public abstract void Render();
+        public abstract void Render(SpriteBatch spriteBatch);
+        public abstract void Load(GraphicsDevice graphicsDevice, ContentManager content);
     }
 }
