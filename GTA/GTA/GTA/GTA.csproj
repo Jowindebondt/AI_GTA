@@ -113,6 +113,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="SteeringBehaviors.cs" />
     <Compile Include="Thug.cs" />
     <Compile Include="World.cs" />
   </ItemGroup>
