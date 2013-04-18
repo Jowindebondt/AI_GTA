@@ -15,7 +15,7 @@ namespace GTA
         public float MaxForce { get; set; }
         public float MaxTurnRate { get; set; }
 
-        public abstract override void Update(int time_elapsed);
+        public abstract override void Update(TimeSpan timeElapsed);
         public abstract override void Render();
     }
 }
