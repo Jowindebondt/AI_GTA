@@ -7,7 +7,7 @@ namespace GTA
 {
     class Citizen : Person
     {
-        public override void Update(int time_elapsed)
+        public override void Update(TimeSpan timeElapsed)
         {
             throw new NotImplementedException();
         }

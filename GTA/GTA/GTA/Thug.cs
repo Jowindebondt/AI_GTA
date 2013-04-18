@@ -7,21 +7,19 @@ namespace GTA
 {
     class Thug : Person
     {
-        private World world;
 
         public Thug()
         {
-            world = World.GetInstance();
         }
 
-        public override void Update(int time_elapsed)
+        public override void Update(TimeSpan timeElapsed)
         {
-            throw new NotImplementedException();
+
         }
 
         public override void Render()
         {
-            throw new NotImplementedException();
+
         }
     }
 }

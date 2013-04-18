@@ -12,8 +12,8 @@ namespace GTA
         public Vector2 Pos { get; set; }
         public float Scale { get; set; }
         public float Bradius { get; set; }
-        
-        public abstract void Update(int time_elapsed);
+
+        public abstract void Update(TimeSpan timeElapsed);
         public abstract void Render();
     }
 }

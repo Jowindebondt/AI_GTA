@@ -13,7 +13,8 @@ namespace GTA
     public class Game1 : Game
     {
         readonly GraphicsDeviceManager _graphics;
-        SpriteBatch spriteBatch;
+        SpriteBatch _spriteBatch;
+        private World _world;
 
         const int Width = 1600;
         const int Height = 900;
@@ -28,6 +29,8 @@ namespace GTA
             IsMouseVisible = false;
             Window.AllowUserResizing = true;
             _graphics.PreparingDeviceSettings += PreparingDeviceSettings;
+
+            _world = World.GetInstance();
         }
 
         /// <summary>
@@ -71,7 +74,9 @@ namespace GTA
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            
 
             // TODO: use this.Content to load your game content here
         }
@@ -95,7 +100,7 @@ namespace GTA
             // Allows the game to exit
             var key = Keyboard.GetState();
             if (key.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Escape))
-                this.Exit();
+                Exit();
 
             else if (key.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.F))
             {
@@ -111,6 +116,7 @@ namespace GTA
                 KeyDown = false;
 
             // TODO: Add your update logic here
+            _world.Update(gameTime.ElapsedGameTime);
 
             base.Update(gameTime);
         }
@@ -124,6 +130,14 @@ namespace GTA
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+            _world.Render();
+            var cars = Content.Load<Texture2D>("Cars");
+            var people = Content.Load<Texture2D>("people");
+            var road = Content.Load<Texture2D>("road");
+
+            _spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
+            _spriteBatch.Draw(cars, Vector2.Zero, Color.White);
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }
