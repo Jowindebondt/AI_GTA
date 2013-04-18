@@ -4,7 +4,6 @@ using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 
 namespace GTA
 {
@@ -22,23 +21,10 @@ namespace GTA
 
         public bool KeyDown { get; set; }
 
-
-        /*Animated Sprite*/
-        private AnimatedTexture _personTexture;
-        private AnimatedTexture _carTexture;
-        private const float Rotation = 0;
-        private const float Scale = 1.0f;
-        private const float Depth = 0.5f;
-
         private Viewport viewport;
-        private Vector2 shipPos;
-        private const int Frames = 3;
-        private const int FramesPerSec = 5;
 
         public Game1()
         {
-            //_personTexture = new AnimatedTexture(Vector2.Zero, Rotation, Scale, Depth);
-            _carTexture = new AnimatedTexture(Vector2.Zero, Rotation, Scale, Depth);
             TargetElapsedTime = TimeSpan.FromSeconds(1/30.0);
 
             _graphics = new GraphicsDeviceManager(this);
@@ -93,14 +79,7 @@ namespace GTA
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            //_personTexture.Load(GraphicsDevice, Content, "people2", Frames, FramesPerSec);
-            //_carTexture.Load(GraphicsDevice, Content, "Cars", Frames, FramesPerSec);
-
             viewport = GraphicsDevice.Viewport;
-
-            shipPos = new Vector2(32, 32); //x and y location to print on screen
-            
             _world.Load(GraphicsDevice, Content);
 
             // TODO: use this.Content to load your game content here
@@ -146,8 +125,6 @@ namespace GTA
 
             var elapsed = (float) gameTime.ElapsedGameTime.TotalSeconds;
             // TODO: Add your update logic here
-            //_personTexture.UpdateFrame(elapsed);
-            //_carTexture.UpdateFrame(elapsed);
 
             _world.Update(gameTime.ElapsedGameTime);
 
