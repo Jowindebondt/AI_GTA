@@ -32,11 +32,12 @@ namespace GTA
 
         private Viewport viewport;
         private Vector2 shipPos;
-        private const int Frames = 24;
-        private const int FramesPerSec = 2;
+        private const int Frames = 3;
+        private const int FramesPerSec = 5;
 
         public Game1()
         {
+            
             _personTexture = new AnimatedTexture(Vector2.Zero, Rotation, Scale, Depth);
             _carTexture = new AnimatedTexture(Vector2.Zero, Rotation, Scale, Depth);
             TargetElapsedTime = TimeSpan.FromSeconds(1/30.0);
@@ -94,7 +95,7 @@ namespace GTA
             // Create a new SpriteBatch, which can be used to draw textures.
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            _personTexture.Load(GraphicsDevice, Content, "People", Frames, FramesPerSec);
+            _personTexture.Load(GraphicsDevice, Content, "people2", Frames, FramesPerSec);
             _carTexture.Load(GraphicsDevice, Content, "Cars", Frames, FramesPerSec);
 
             viewport = GraphicsDevice.Viewport;
