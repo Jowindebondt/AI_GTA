@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Windows.Forms;
 using Microsoft.Xna.Framework;
@@ -20,9 +21,24 @@ namespace GTA
         const int Height = 900;
 
         public bool KeyDown { get; set; }
-        
+
+
+        /*Animated Sprite*/
+        private AnimatedTexture SpriteTexture;
+        private const float Rotation = 0;
+        private const float Scale = 1.0f;
+        private const float Depth = 0.5f;
+
+        private Viewport viewport;
+        private Vector2 shipPos;
+        private const int Frames = 4;
+        private const int FramesPerSec = 2;
+
         public Game1()
         {
+            SpriteTexture = new AnimatedTexture(Vector2.Zero, Rotation, Scale, Depth);
+            TargetElapsedTime = TimeSpan.FromSeconds(1/30.0);
+
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
@@ -74,8 +90,15 @@ namespace GTA
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
+            //_spriteBatch = new SpriteBatch(GraphicsDevice);
+            // Create a new SpriteBatch, which can be used to draw textures.
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            // "shipanimated" is the name of the sprite asset in the project.
+            SpriteTexture.Load(GraphicsDevice, Content, "People", Frames, FramesPerSec);
+            viewport = GraphicsDevice.Viewport;
+            shipPos = new Vector2(32, 32); //x and y location to print on screen
+       
             
 
             // TODO: use this.Content to load your game content here
@@ -115,7 +138,10 @@ namespace GTA
             if (key.IsKeyUp(Microsoft.Xna.Framework.Input.Keys.F))
                 KeyDown = false;
 
+            float elapsed = (float) gameTime.ElapsedGameTime.TotalSeconds;
             // TODO: Add your update logic here
+            SpriteTexture.UpdateFrame(elapsed);
+
             _world.Update(gameTime.ElapsedGameTime);
 
             base.Update(gameTime);
@@ -135,8 +161,12 @@ namespace GTA
             var people = Content.Load<Texture2D>("people");
             var road = Content.Load<Texture2D>("road");
 
-            _spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
-            _spriteBatch.Draw(cars, Vector2.Zero, Color.White);
+            //_spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
+            //_spriteBatch.Draw(cars, Vector2.Zero, Color.White);
+            //_spriteBatch.End();
+
+            _spriteBatch.Begin();
+            SpriteTexture.DrawFrame(_spriteBatch, shipPos);
             _spriteBatch.End();
 
             base.Draw(gameTime);

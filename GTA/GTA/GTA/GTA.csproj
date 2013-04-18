@@ -108,6 +108,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnimatedTexture.cs" />
     <Compile Include="BaseGameEntity.cs" />
     <Compile Include="Citizen.cs" />
     <Compile Include="MovingEntity.cs" />
