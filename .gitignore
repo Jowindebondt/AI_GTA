@@ -108,3 +108,4 @@ Backup*/
 UpgradeLog*.XML
 
 GTA/GTA/GTA/GTA.csproj.Debug.cachefile
+GTA/GTA/GTA/GTA.csproj.Release.cachefile
