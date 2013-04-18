@@ -26,6 +26,7 @@ namespace GTA
             this.Scale = Scale;
             this.Depth = Depth;
         }
+
         public void Load(GraphicsDevice device, ContentManager content, string asset, int FrameCount, int FramesPerSec)
         {
             framecount = FrameCount;
@@ -36,7 +37,6 @@ namespace GTA
             Paused = false;
         }
 
-        // class AnimatedTexture
         public void UpdateFrame(float elapsed)
         {
             if (Paused)
@@ -56,11 +56,12 @@ namespace GTA
         {
             DrawFrame(Batch, Frame, screenpos);
         }
+
         public void DrawFrame(SpriteBatch Batch, int Frame, Vector2 screenpos)
         {
             int FrameWidth = myTexture.Width / framecount;
-            Rectangle sourcerect = new Rectangle(FrameWidth * Frame, 0,
-                FrameWidth, myTexture.Height);
+
+            Rectangle sourcerect = new Rectangle(FrameWidth * Frame, 0, FrameWidth, myTexture.Height/7);
             Batch.Draw(myTexture, screenpos, sourcerect, Color.White,
                 Rotation, Origin, Scale, SpriteEffects.None, Depth);
         }
@@ -69,6 +70,7 @@ namespace GTA
         {
             get { return Paused; }
         }
+
         public void Reset()
         {
             Frame = 0;

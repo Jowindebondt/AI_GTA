@@ -24,19 +24,21 @@ namespace GTA
 
 
         /*Animated Sprite*/
-        private AnimatedTexture SpriteTexture;
+        private AnimatedTexture _personTexture;
+        private AnimatedTexture _carTexture;
         private const float Rotation = 0;
         private const float Scale = 1.0f;
         private const float Depth = 0.5f;
 
         private Viewport viewport;
         private Vector2 shipPos;
-        private const int Frames = 4;
+        private const int Frames = 24;
         private const int FramesPerSec = 2;
 
         public Game1()
         {
-            SpriteTexture = new AnimatedTexture(Vector2.Zero, Rotation, Scale, Depth);
+            _personTexture = new AnimatedTexture(Vector2.Zero, Rotation, Scale, Depth);
+            _carTexture = new AnimatedTexture(Vector2.Zero, Rotation, Scale, Depth);
             TargetElapsedTime = TimeSpan.FromSeconds(1/30.0);
 
             _graphics = new GraphicsDeviceManager(this);
@@ -90,13 +92,13 @@ namespace GTA
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
-            //_spriteBatch = new SpriteBatch(GraphicsDevice);
-            // Create a new SpriteBatch, which can be used to draw textures.
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // "shipanimated" is the name of the sprite asset in the project.
-            SpriteTexture.Load(GraphicsDevice, Content, "People", Frames, FramesPerSec);
+            _personTexture.Load(GraphicsDevice, Content, "People", Frames, FramesPerSec);
+            _carTexture.Load(GraphicsDevice, Content, "Cars", Frames, FramesPerSec);
+
             viewport = GraphicsDevice.Viewport;
+
             shipPos = new Vector2(32, 32); //x and y location to print on screen
        
             
@@ -140,7 +142,8 @@ namespace GTA
 
             float elapsed = (float) gameTime.ElapsedGameTime.TotalSeconds;
             // TODO: Add your update logic here
-            SpriteTexture.UpdateFrame(elapsed);
+            _personTexture.UpdateFrame(elapsed);
+            _carTexture.UpdateFrame(elapsed);
 
             _world.Update(gameTime.ElapsedGameTime);
 
@@ -157,16 +160,10 @@ namespace GTA
 
             // TODO: Add your drawing code here
             _world.Render();
-            var cars = Content.Load<Texture2D>("Cars");
-            var people = Content.Load<Texture2D>("people");
-            var road = Content.Load<Texture2D>("road");
-
-            //_spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
-            //_spriteBatch.Draw(cars, Vector2.Zero, Color.White);
-            //_spriteBatch.End();
 
             _spriteBatch.Begin();
-            SpriteTexture.DrawFrame(_spriteBatch, shipPos);
+            _personTexture.DrawFrame(_spriteBatch, shipPos);
+            //_carTexture.DrawFrame(_spriteBatch, shipPos);
             _spriteBatch.End();
 
             base.Draw(gameTime);
