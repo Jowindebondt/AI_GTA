@@ -19,6 +19,11 @@ namespace GTA
             return new Vector2();
         }
 
+        private Vector2 Explore(Vector2 vector)
+        {
+            return new Vector2();
+        }
+
         public Vector2 Calculate()
         {
             return new Vector2();
@@ -54,6 +59,11 @@ namespace GTA
 
         }
 
+        public void ExploreOn()
+        {
+            
+        }
+
         public void WanderOn()
         {
 
@@ -65,6 +75,11 @@ namespace GTA
         }
 
         public void ArriveOff()
+        {
+
+        }
+
+        public void ExploreOff()
         {
 
         }
