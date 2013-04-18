@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace GTA
+﻿namespace GTA
 {
     class World
     {
@@ -11,7 +6,7 @@ namespace GTA
 
         private World()
         {
-            
+
         }
 
         public static World GetInstance()

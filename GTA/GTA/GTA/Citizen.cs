@@ -5,15 +5,8 @@ using System.Text;
 
 namespace GTA
 {
-    class Thug : Person
+    class Citizen : Person
     {
-        private World world;
-
-        public Thug()
-        {
-            world = World.GetInstance();
-        }
-
         public override void Update(int time_elapsed)
         {
             throw new NotImplementedException();
