@@ -8,32 +8,12 @@ namespace GTA
 {
     abstract class BaseGameEntity
     {
-        private int _id;
-        private Vector2 _pos;
-        private float _scale;
-        private float _bradius;
-
+        public int Id { get; set; }
+        public Vector2 Pos { get; set; }
+        public float Scale { get; set; }
+        public float Bradius { get; set; }
+        
         public abstract void Update(int time_elapsed);
         public abstract void Render();
-        
-        public int GetId()
-        {
-            return _id;
-        }
-
-        public Vector2 GetPos()
-        {
-            return _pos;
-        }
-
-        public float GetScale()
-        {
-            return _scale;
-        }
-
-        public float GetBradius()
-        {
-            return _bradius;
-        }
     }
 }

@@ -8,44 +8,14 @@ namespace GTA
 {
     abstract class MovingEntity : BaseGameEntity
     {
-        private Vector2 _velocity;
-        private float _mass;
-        private Vector2 _heading;
-        private float _maxSpeed;
-        private float _maxForce;
-        private float _maxTurnRate;
+        public Vector2 Velocity { get; set; }
+        public float Mass { get; set; }
+        public Vector2 Heading { get; set; }
+        public float MaxSpeed { get; set; }
+        public float MaxForce { get; set; }
+        public float MaxTurnRate { get; set; }
 
         public abstract override void Update(int time_elapsed);
         public abstract override void Render();
-
-        public Vector2 GetVelocity()
-        {
-            return _velocity;
-        }
-
-        public float GetMass()
-        {
-            return _mass;
-        }
-
-        public Vector2 GetHeading()
-        {
-            return _heading;
-        }
-
-        public float GetMaxSpeed()
-        {
-            return _maxSpeed;
-        }
-
-        public float GetMaxForce()
-        {
-            return _maxForce;
-        }
-
-        public float GetMaxTurnRate()
-        {
-            return _maxTurnRate;
-        }
     }
 }

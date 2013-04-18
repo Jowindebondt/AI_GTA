@@ -1,28 +1,33 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
+using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 
 namespace GTA
 {
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class Game1 : Microsoft.Xna.Framework.Game
+    public class Game1 : Game
     {
-        GraphicsDeviceManager graphics;
+        readonly GraphicsDeviceManager _graphics;
         SpriteBatch spriteBatch;
 
+        const int Width = 1600;
+        const int Height = 900;
+
+        public bool KeyDown { get; set; }
+        
         public Game1()
         {
-            graphics = new GraphicsDeviceManager(this);
+            _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
+            IsMouseVisible = false;
+            Window.AllowUserResizing = true;
+            _graphics.PreparingDeviceSettings += PreparingDeviceSettings;
         }
 
         /// <summary>
@@ -36,6 +41,27 @@ namespace GTA
             // TODO: Add your initialization logic here
 
             base.Initialize();
+        }
+
+        void PreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
+        {
+            var resOk = false;
+
+            foreach (var dm in GraphicsAdapter.DefaultAdapter.SupportedDisplayModes.Where(dm => dm.Width == Width && dm.Height == Height))
+                resOk = true;
+
+            if (resOk)
+            {
+                e.GraphicsDeviceInformation.PresentationParameters.IsFullScreen = false;
+                e.GraphicsDeviceInformation.PresentationParameters.BackBufferFormat = SurfaceFormat.Color;
+                e.GraphicsDeviceInformation.PresentationParameters.BackBufferWidth = Width;
+                e.GraphicsDeviceInformation.PresentationParameters.BackBufferHeight = Height;
+            }
+            else
+            {
+                MessageBox.Show("Cannot find requested resolution", "Severe Error");
+                Exit();
+            }
         }
 
         /// <summary>
@@ -67,8 +93,22 @@ namespace GTA
         protected override void Update(GameTime gameTime)
         {
             // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+            var key = Keyboard.GetState();
+            if (key.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Escape))
                 this.Exit();
+
+            else if (key.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.F))
+            {
+                if (!KeyDown)
+                {
+                    KeyDown = true;
+                    _graphics.ToggleFullScreen();
+                    IsMouseVisible = !IsMouseVisible;
+                }
+            }
+
+            if (key.IsKeyUp(Microsoft.Xna.Framework.Input.Keys.F))
+                KeyDown = false;
 
             // TODO: Add your update logic here
 
