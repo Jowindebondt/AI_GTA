@@ -11,7 +11,6 @@ namespace GTA
 
         private World()
         {
-            
         }
 
         public static World GetInstance()
