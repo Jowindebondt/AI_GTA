@@ -17,17 +17,17 @@ namespace GTA
 
         public override void Update(TimeSpan timeElapsed)
         {
-            throw new NotImplementedException();
+            _personTexture.UpdateFrame((float)timeElapsed.TotalSeconds);
         }
 
         public override void Render(SpriteBatch spriteBatch)
         {
-            throw new NotImplementedException();
+            _personTexture.DrawFrame(spriteBatch, Pos, _sourceY);
         }
 
         public override void Load(GraphicsDevice graphicsDevice, ContentManager content)
         {
-            throw new NotImplementedException();
+            _personTexture.Load(graphicsDevice, content, "people2", Frames, FramesPerSec);
         }
     }
 }

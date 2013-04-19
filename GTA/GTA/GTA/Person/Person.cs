@@ -13,6 +13,7 @@ namespace GTA
         public AnimatedTexture _personTexture;
         public const int Frames = 3;
         public const int FramesPerSec = 5;
+        public int _sourceY;
 
         public abstract override void Update(TimeSpan timeElapsed);
         public abstract override void Render(SpriteBatch spriteBatch);

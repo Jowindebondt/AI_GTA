@@ -19,7 +19,7 @@ namespace GTA
 
         public override void Render(SpriteBatch spriteBatch)
         {
-            _personTexture.DrawFrame(spriteBatch, Pos);
+            _personTexture.DrawFrame(spriteBatch, Pos, _sourceY);
         }
 
         public override void Load(GraphicsDevice graphicsDevice, ContentManager content)

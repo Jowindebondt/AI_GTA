@@ -12,7 +12,15 @@ namespace GTA
 
         private World()
         {
-            _entities = new List<BaseGameEntity> {new Thug(){Pos = new Vector2(32,32)}};
+            _entities = new List<BaseGameEntity> { 
+                new Thug() { Pos = new Vector2(20, 20), _sourceY = 0 }, 
+                new Citizen() { Pos = new Vector2(36, 20), _sourceY = 16}, 
+                new Citizen() { Pos = new Vector2(52, 20), _sourceY = 32}, 
+                new Citizen() { Pos = new Vector2(68, 20), _sourceY = 48},
+                new Citizen() { Pos = new Vector2(84, 20), _sourceY = 64}, 
+                new Citizen() { Pos = new Vector2(100, 20), _sourceY = 80}, 
+                new Citizen() { Pos = new Vector2(116, 20), _sourceY = 96} 
+            };
         }
 
         public static World GetInstance()

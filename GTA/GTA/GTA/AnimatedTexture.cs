@@ -52,16 +52,16 @@ namespace GTA
         }
 
         // class AnimatedTexture
-        public void DrawFrame(SpriteBatch Batch, Vector2 screenpos)
+        public void DrawFrame(SpriteBatch Batch, Vector2 screenpos, int sourceY)
         {
-            DrawFrame(Batch, Frame, screenpos);
+            DrawFrame(Batch, Frame, screenpos, sourceY);
         }
 
-        public void DrawFrame(SpriteBatch Batch, int Frame, Vector2 screenpos)
+        public void DrawFrame(SpriteBatch Batch, int Frame, Vector2 screenpos, int sourceY)
         {
             int FrameWidth = myTexture.Width / framecount;
 
-            Rectangle sourcerect = new Rectangle(FrameWidth * Frame, 0, FrameWidth, myTexture.Height/7);
+            Rectangle sourcerect = new Rectangle(FrameWidth * Frame, sourceY, FrameWidth, myTexture.Height / 7);
             Batch.Draw(myTexture, screenpos, sourcerect, Color.White,
                 Rotation, Origin, Scale, SpriteEffects.None, Depth);
         }
