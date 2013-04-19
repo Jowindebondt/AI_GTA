@@ -10,7 +10,7 @@ namespace GTA
 {
     abstract class Person : MovingEntity
     {
-        public AnimatedTexture _personTexture = new AnimatedTexture(Vector2.Zero, 1, 1, 0);
+        public AnimatedTexture _personTexture;
         public const int Frames = 3;
         public const int FramesPerSec = 5;
 
