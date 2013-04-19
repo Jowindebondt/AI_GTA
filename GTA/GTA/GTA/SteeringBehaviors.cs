@@ -51,6 +51,8 @@ namespace GTA
             //move the target into a position WanderDist in front of the agent
             Vector2 target = _target + new Vector2(m_dWanderDistance, 0);
 
+            GetPerpVector(_entity.Heading, _entity.Side);
+
             //project the target into world space
             Vector2 Target = PointToWorldSpace(target,
                                                  _entity.Heading,
@@ -59,6 +61,11 @@ namespace GTA
 
             //and steer towards it
             return Target - _entity.Pos;
+        }
+
+        public static void GetPerpVector(Vector2 vec, Vector2 perp)
+        {
+            perp = new Vector2(-vec.Y, vec.X);
         }
 
         private Vector2 Explore(Vector2 vector)
@@ -138,23 +145,22 @@ namespace GTA
 
         private Vector2 PointToWorldSpace(Vector2 point, Vector2 AgentHeading, Vector2 AgentSide, Vector2 AgentPosition)
         {
-            ////make a copy of the point
-            //Vector2 TransPoint = point;
-  
+            //make a copy of the point
+            Vector2 TransPoint = point;
+
             ////create a transformation matrix
-            //Matrix.
-            //C2DMatrix matTransform;
+            //Matrix.C2DMatrix matTransform;
 
             ////rotate
             //matTransform.Rotate(AgentHeading, AgentSide);
 
             ////and translate
             //matTransform.Translate(AgentPosition.x, AgentPosition.y);
-	
+
             ////now transform the vertices
             //matTransform.TransformVector2Ds(TransPoint);
 
-            //return TransPoint;
+            return TransPoint;
         }
     }
 }

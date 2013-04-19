@@ -14,7 +14,7 @@ namespace GTA
 
         public override void Update(TimeSpan timeElapsed)
         {
-            
+
             _personTexture.UpdateFrame((float)timeElapsed.TotalSeconds);
         }
 

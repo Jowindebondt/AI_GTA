@@ -13,6 +13,7 @@ namespace GTA
         public Vector2 Velocity { get; set; }
         public float Mass { get; set; }
         public Vector2 Heading { get; set; }
+        public Vector2 Side { get; set; }
         public float MaxSpeed { get; set; }
         public float MaxForce { get; set; }
         public float MaxTurnRate { get; set; }
