@@ -12,6 +12,7 @@ namespace GTA
     {
         public Citizen()
         {
+            SteeringBehaviors = new SteeringBehaviors(this);
             _personTexture = new AnimatedTexture(Vector2.Zero, 0, 1, 0);    
         }
 

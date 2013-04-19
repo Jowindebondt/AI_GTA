@@ -19,7 +19,7 @@ namespace GTA
                 new Citizen() { Pos = new Vector2(68, 20), _sourceY = 48},
                 new Citizen() { Pos = new Vector2(84, 20), _sourceY = 64}, 
                 new Citizen() { Pos = new Vector2(100, 20), _sourceY = 80}, 
-                new Citizen() { Pos = new Vector2(116, 20), _sourceY = 96} 
+                new Citizen() { Pos = new Vector2(116, 20), _sourceY = 96}
             };
         }
 
