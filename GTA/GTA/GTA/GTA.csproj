@@ -119,6 +119,7 @@
     <Compile Include="SteeringBehaviors.cs" />
     <Compile Include="Person\Thug.cs" />
     <Compile Include="Program\World.cs" />
+    <Compile Include="VectorHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

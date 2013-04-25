@@ -15,7 +15,7 @@ namespace GTA
         public const int FramesPerSec = 5;
         public int _sourceY;
 
-        public abstract override void Update(TimeSpan timeElapsed);
+        public abstract override void Update(float timeElapsed);
         public abstract override void Render(SpriteBatch spriteBatch);
         public abstract override void Load(GraphicsDevice graphicsDevice, ContentManager content);
     }

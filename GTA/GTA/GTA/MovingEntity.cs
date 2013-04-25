@@ -19,8 +19,10 @@ namespace GTA
         public float MaxTurnRate { get; set; }
         public SteeringBehaviors SteeringBehaviors { get; set; }
         public float TimeEllapsed { get; set; }
+        public Vector2 SteeringForce { get; set; }
+        public Vector2 Rotation { get; set; }
 
-        public abstract override void Update(TimeSpan timeElapsed);
+        public abstract override void Update(float timeElapsed);
         public abstract override void Render(SpriteBatch spriteBatch);
         public abstract override void Load(GraphicsDevice graphicsDevice, ContentManager content);
     }

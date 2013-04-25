@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Keys = Microsoft.Xna.Framework.Input.Keys;
 
 namespace GTA
 {
@@ -25,7 +26,7 @@ namespace GTA
 
         public Game1()
         {
-            TargetElapsedTime = TimeSpan.FromSeconds(1/30.0);
+            TargetElapsedTime = TimeSpan.FromSeconds(1/15.0);
 
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -108,6 +109,26 @@ namespace GTA
                 }
             }
 
+            else if (key.IsKeyDown(Keys.Up))
+            {
+                _world.UpdateThug(Keys.Up);
+            }
+
+            else if (key.IsKeyDown(Keys.Left))
+            {
+                _world.UpdateThug(Keys.Left);
+            }
+
+            else if (key.IsKeyDown(Keys.Right))
+            {
+                _world.UpdateThug(Keys.Right);
+            }
+
+            else if (key.IsKeyDown(Keys.Down))
+            {
+                _world.UpdateThug(Keys.Down);
+            }
+
             if (key.IsKeyUp(Microsoft.Xna.Framework.Input.Keys.F))
                 KeyDown = false;
         }
@@ -126,7 +147,7 @@ namespace GTA
             var elapsed = (float) gameTime.ElapsedGameTime.TotalSeconds;
             // TODO: Add your update logic here
 
-            _world.Update(gameTime.ElapsedGameTime);
+            _world.Update(elapsed);
 
             base.Update(gameTime);
         }

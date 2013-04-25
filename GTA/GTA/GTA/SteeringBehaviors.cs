@@ -7,22 +7,34 @@ namespace GTA
     {
         private Random rand;
         Vector2 m_vWanderTarget;
+        private Vector2 target;
+
+        private Vector2 m_vSteeringForce;
+
         double m_dWanderJitter;
         double _mDWanderRadius;
         float m_dWanderDistance;
         private MovingEntity _entity;
 
+        private bool useWander;
+        private bool useFlee;
+        private bool useArrive;
+
         public SteeringBehaviors(MovingEntity entity)
         {
             _entity = entity;
             rand = new Random();
-            _mDWanderRadius = 1.2;
-            m_dWanderDistance = 2.0f;
+            _mDWanderRadius = 500f;
+            m_dWanderDistance = 20f;
+            m_vSteeringForce = new Vector2();
+            m_dWanderJitter = 100f;
         }
 
         private Vector2 Flee(Vector2 target)
         {
-            return new Vector2();
+            Vector2 desiredVelocity = Vector2.Normalize(_entity.Pos - target) * _entity.MaxSpeed;
+
+            return desiredVelocity - _entity.Velocity;
         }
 
         private Vector2 Arrive(Vector2 target)
@@ -30,14 +42,14 @@ namespace GTA
             return new Vector2();
         }
 
-        private Vector2 Wander(Vector2 _target)
+        private Vector2 Wander()
         {
             //this behavior is dependent on the update rate, so this line must
             //be included when using time independent framerate.
             var jitterThisTimeSlice = m_dWanderJitter * _entity.TimeEllapsed;
 
             //first, add a small random vector to the target's position
-            m_vWanderTarget += new Vector2((float)(RandomClamped() * jitterThisTimeSlice),
+            m_vWanderTarget = new Vector2((float)(RandomClamped() * jitterThisTimeSlice),
                                         (float)(RandomClamped() * jitterThisTimeSlice));
 
             //reproject this new vector back on to a unit circle
@@ -45,13 +57,15 @@ namespace GTA
 
             //increase the length of the vector to the same as the radius
             //of the wander circle
-            m_vWanderTarget.X *= (float)_mDWanderRadius;
-            m_vWanderTarget.Y *= (float)_mDWanderRadius;
+            m_vWanderTarget *= (float)_mDWanderRadius;
+
+            //m_vWanderTarget.X *= (float)_mDWanderRadius;
+            //m_vWanderTarget.Y *= (float)_mDWanderRadius;
 
             //move the target into a position WanderDist in front of the agent
-            Vector2 target = _target + new Vector2(m_dWanderDistance, 0);
+            Vector2 target = m_vWanderTarget + new Vector2(m_dWanderDistance, 0);
 
-            GetPerpVector(_entity.Heading, _entity.Side);
+            _entity.Side = VectorHelper.GetPerpVector(_entity.Heading);
 
             //project the target into world space
             Vector2 Target = PointToWorldSpace(target,
@@ -63,11 +77,6 @@ namespace GTA
             return Target - _entity.Pos;
         }
 
-        public static void GetPerpVector(Vector2 vec, Vector2 perp)
-        {
-            perp = new Vector2(-vec.Y, vec.X);
-        }
-
         private Vector2 Explore(Vector2 vector)
         {
             return new Vector2();
@@ -75,7 +84,17 @@ namespace GTA
 
         public Vector2 Calculate()
         {
-            return new Vector2();
+            m_vSteeringForce = Vector2.Zero;
+
+            if (useWander)
+            {
+                m_vSteeringForce += Wander();
+            }
+            if (useFlee)
+            {
+                m_vSteeringForce += Flee(target);
+            }
+            return m_vSteeringForce;
         }
 
         public Vector2 ForwardComponent(Vector2 vector)
@@ -95,17 +114,17 @@ namespace GTA
 
         public void SetTarget(Vector2 vector)
         {
-            
+            target = vector;
         }
 
         public void FleeOn()
         {
-
+            useFlee = true;
         }
 
         public void ArriveOn()
         {
-
+            useArrive = true;
         }
 
         public void ExploreOn()
@@ -115,17 +134,17 @@ namespace GTA
 
         public void WanderOn()
         {
-
+            useWander = true;
         }
 
         public void FleeOff()
         {
-
+            useFlee = false;
         }
 
         public void ArriveOff()
         {
-
+            useArrive = false;
         }
 
         public void ExploreOff()
@@ -135,30 +154,24 @@ namespace GTA
 
         public void WanderOff()
         {
-
+            useWander = false;
         }
 
         private double RandomClamped()
         {
-            return rand.NextDouble() - rand.NextDouble();
+            return rand.NextDouble()/* - rand.NextDouble()*/;
         }
 
         private Vector2 PointToWorldSpace(Vector2 point, Vector2 AgentHeading, Vector2 AgentSide, Vector2 AgentPosition)
         {
-            //make a copy of the point
             Vector2 TransPoint = point;
 
-            ////create a transformation matrix
-            //Matrix.C2DMatrix matTransform;
+            //create a transformation matrix
+            Matrix matTransform = Matrix.CreateRotationX(MathHelper.ToRadians(Vector2.Dot(AgentHeading, AgentSide)));
+            matTransform += Matrix.CreateTranslation(AgentPosition.X, AgentPosition.Y, 0);
 
-            ////rotate
-            //matTransform.Rotate(AgentHeading, AgentSide);
-
-            ////and translate
-            //matTransform.Translate(AgentPosition.x, AgentPosition.y);
-
-            ////now transform the vertices
-            //matTransform.TransformVector2Ds(TransPoint);
+            //now transform the vertices
+            TransPoint = Vector2.Transform(TransPoint, matTransform);
 
             return TransPoint;
         }

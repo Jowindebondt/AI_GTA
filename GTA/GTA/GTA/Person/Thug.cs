@@ -12,10 +12,10 @@ namespace GTA
             _personTexture = new AnimatedTexture(Vector2.Zero, 0, 1, 0);
         }
 
-        public override void Update(TimeSpan timeElapsed)
+        public override void Update(float timeElapsed)
         {
 
-            _personTexture.UpdateFrame((float)timeElapsed.TotalSeconds);
+            _personTexture.UpdateFrame(timeElapsed);
         }
 
         public override void Render(SpriteBatch spriteBatch)
