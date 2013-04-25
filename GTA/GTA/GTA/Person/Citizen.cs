@@ -10,20 +10,38 @@ namespace GTA
 {
     class Citizen : Person
     {
-        public MovingEntity enemy; 
+        public MovingEntity enemy;
+        public bool Flee;
+        public bool Wander;
+        public bool Seek;
 
         public Citizen()
         {
             SteeringBehaviors = new SteeringBehaviors(this);
+            
             _personTexture = new AnimatedTexture(Vector2.Zero, 0, 1, 0);
             Mass = 1f;
-            SteeringBehaviors.WanderOn();
             Heading = new Vector2(1);
             MaxSpeed = 100f;
         }
 
         public override void Update(float timeElapsed)
         {
+            if (Flee)
+                SteeringBehaviors.FleeOn();
+            else
+                SteeringBehaviors.FleeOff();
+
+            if (Wander)
+                SteeringBehaviors.WanderOn();
+            else
+                SteeringBehaviors.WanderOff();
+
+            if (Seek)
+                SteeringBehaviors.SeekOn();
+            else
+                SteeringBehaviors.SeekOff();
+
             SteeringBehaviors.SetTarget(enemy.Pos);
             SteeringForce = SteeringBehaviors.Calculate();
             Rotation = SteeringForce;

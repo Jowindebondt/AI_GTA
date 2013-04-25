@@ -18,7 +18,10 @@ namespace GTA
 
         private bool useWander;
         private bool useFlee;
+        private bool useSeek;
         private bool useArrive;
+
+        private const double PANICDISTANCESQ = 100*100;
 
         public SteeringBehaviors(MovingEntity entity)
         {
@@ -32,8 +35,16 @@ namespace GTA
 
         private Vector2 Flee(Vector2 target)
         {
-            Vector2 desiredVelocity = Vector2.Normalize(_entity.Pos - target) * _entity.MaxSpeed;
+            if (Vector2.DistanceSquared(_entity.Pos, target) > PANICDISTANCESQ)
+                return Vector2.Zero;
 
+            Vector2 desiredVelocity = Vector2.Normalize(_entity.Pos - target) * _entity.MaxSpeed;
+            return desiredVelocity - _entity.Velocity;
+        }
+
+        private Vector2 Seek(Vector2 target)
+        {
+            Vector2 desiredVelocity = Vector2.Normalize(target - _entity.Pos) * _entity.MaxSpeed;
             return desiredVelocity - _entity.Velocity;
         }
 
@@ -94,6 +105,10 @@ namespace GTA
             {
                 m_vSteeringForce += Flee(target);
             }
+            if (useSeek)
+            {
+                m_vSteeringForce += Seek(target);
+            }
             return m_vSteeringForce;
         }
 
@@ -122,6 +137,11 @@ namespace GTA
             useFlee = true;
         }
 
+        public void SeekOn()
+        {
+            useSeek = true;
+        }
+
         public void ArriveOn()
         {
             useArrive = true;
@@ -140,6 +160,11 @@ namespace GTA
         public void FleeOff()
         {
             useFlee = false;
+        }
+
+        public void SeekOff()
+        {
+            useSeek = false;
         }
 
         public void ArriveOff()

@@ -13,11 +13,14 @@ namespace GTA
         private MovingEntity thug;
         private World()
         {
-            thug = new Thug() {Pos = new Vector2(20, 20), _sourceY = 0};
+            thug = new Thug() {Pos = new Vector2(800, 450), _sourceY = 0};
+            Citizen c1 = new Citizen() {Pos = new Vector2(36, 20), _sourceY = 16, enemy = thug, Flee = true, Wander = false, Seek = false};
+            Citizen c2 = new Citizen() { Pos = new Vector2(52, 20), _sourceY = 32, enemy = thug, Flee = false, Wander = false, Seek = true };
+
             _entities = new List<BaseGameEntity> { 
-                new Citizen() { Pos = new Vector2(36, 20), _sourceY = 16, enemy = thug} 
-                /*new Citizen() { Pos = new Vector2(52, 20), _sourceY = 32}, 
-                new Citizen() { Pos = new Vector2(68, 20), _sourceY = 48},
+                c1,
+                c2
+                /*new Citizen() { Pos = new Vector2(68, 20), _sourceY = 48},
                 new Citizen() { Pos = new Vector2(84, 20), _sourceY = 64}, 
                 new Citizen() { Pos = new Vector2(100, 20), _sourceY = 80}, 
                 new Citizen() { Pos = new Vector2(116, 20), _sourceY = 96}*/

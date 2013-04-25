@@ -15,6 +15,11 @@ namespace GTA
         public override void Update(float timeElapsed)
         {
 
+            if (Pos.X > 1600) { Pos = new Vector2(0, Pos.Y); }
+            if (Pos.X < 0) { Pos = new Vector2(1600, Pos.Y); }
+            if (Pos.Y < 0) { Pos = new Vector2(Pos.X, 900); }
+            if (Pos.Y > 900) { Pos = new Vector2(Pos.X, 0); }
+
             _personTexture.UpdateFrame(timeElapsed);
         }
 
