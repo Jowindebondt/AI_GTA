@@ -100,7 +100,7 @@ namespace GTA
             if (key.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Escape))
                 Exit();
 
-            else if (key.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.F))
+            if (key.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.F))
             {
                 if (!KeyDown)
                 {
@@ -109,22 +109,22 @@ namespace GTA
                 }
             }
 
-            else if (key.IsKeyDown(Keys.Up))
+            if (key.IsKeyDown(Keys.Up))
             {
                 _world.UpdateThug(Keys.Up);
             }
 
-            else if (key.IsKeyDown(Keys.Left))
+            if (key.IsKeyDown(Keys.Left))
             {
                 _world.UpdateThug(Keys.Left);
             }
 
-            else if (key.IsKeyDown(Keys.Right))
+            if (key.IsKeyDown(Keys.Right))
             {
                 _world.UpdateThug(Keys.Right);
             }
 
-            else if (key.IsKeyDown(Keys.Down))
+            if (key.IsKeyDown(Keys.Down))
             {
                 _world.UpdateThug(Keys.Down);
             }

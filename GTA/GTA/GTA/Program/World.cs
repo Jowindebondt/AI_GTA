@@ -14,7 +14,7 @@ namespace GTA
         private World()
         {
             thug = new Thug() {Pos = new Vector2(800, 450), _sourceY = 0};
-            Citizen c1 = new Citizen() {Pos = new Vector2(36, 20), _sourceY = 16, enemy = thug, Flee = true, Wander = false, Seek = false};
+            Citizen c1 = new Citizen() {Pos = new Vector2(36, 20), _sourceY = 16, enemy = thug, Flee = true, Wander = true, Seek = false};
             Citizen c2 = new Citizen() { Pos = new Vector2(52, 20), _sourceY = 32, enemy = thug, Flee = false, Wander = false, Seek = true };
 
             _entities = new List<BaseGameEntity> { 
@@ -55,23 +55,21 @@ namespace GTA
 
         public void UpdateThug(Keys key)
         {
-            switch (key)
+            if (key == Keys.Up)
             {
-                case Keys.Up:
-                    thug.Pos = new Vector2(thug.Pos.X, thug.Pos.Y - 5);
-                    break;
-
-                case Keys.Down:
-                    thug.Pos = new Vector2(thug.Pos.X, thug.Pos.Y + 5);
-                    break;
-
-                case Keys.Left:
-                    thug.Pos = new Vector2(thug.Pos.X - 5, thug.Pos.Y);
-                    break;
-
-                case Keys.Right:
-                    thug.Pos = new Vector2(thug.Pos.X + 5, thug.Pos.Y);
-                    break;
+                thug.Pos = new Vector2(thug.Pos.X, thug.Pos.Y - 8);
+            }
+            if (key == Keys.Down)
+            {
+                thug.Pos = new Vector2(thug.Pos.X, thug.Pos.Y + 8);
+            }
+            if (key == Keys.Left)
+            {
+                thug.Pos = new Vector2(thug.Pos.X - 8, thug.Pos.Y);
+            }
+            if (key == Keys.Right)
+            {
+                thug.Pos = new Vector2(thug.Pos.X + 8, thug.Pos.Y);
             }
         }
     }

@@ -21,7 +21,7 @@ namespace GTA
             
             _personTexture = new AnimatedTexture(Vector2.Zero, 0, 1, 0);
             Mass = 1f;
-            Heading = new Vector2(1);
+            Heading = new Vector2(1, 50);
             MaxSpeed = 100f;
         }
 
@@ -43,13 +43,14 @@ namespace GTA
                 SteeringBehaviors.SeekOff();
 
             SteeringBehaviors.SetTarget(enemy.Pos);
+
             SteeringForce = SteeringBehaviors.Calculate();
             Rotation = SteeringForce;
             Vector2 acceleration = SteeringForce / Mass;
 
             Velocity += acceleration * timeElapsed;
 
-            //Velocity = VectorHelper.MaxLimit(Velocity, MaxSpeed);
+            Velocity = VectorHelper.MaxLimit(Velocity, MaxSpeed);
             if (Velocity.Length() > 0.001)
                 Rotation = Velocity * timeElapsed;
             Pos += Velocity * timeElapsed;

@@ -27,10 +27,10 @@ namespace GTA
         {
             _entity = entity;
             rand = new Random();
-            _mDWanderRadius = 500f;
-            m_dWanderDistance = 20f;
+            _mDWanderRadius = 1.2f;
+            m_dWanderDistance = 10.0f;
             m_vSteeringForce = new Vector2();
-            m_dWanderJitter = 100f;
+            m_dWanderJitter = 40.0f;
         }
 
         private Vector2 Flee(Vector2 target)
@@ -58,7 +58,8 @@ namespace GTA
             //this behavior is dependent on the update rate, so this line must
             //be included when using time independent framerate.
             var jitterThisTimeSlice = m_dWanderJitter * _entity.TimeEllapsed;
-
+            if (jitterThisTimeSlice <= 0)
+                jitterThisTimeSlice = 1;
             //first, add a small random vector to the target's position
             m_vWanderTarget = new Vector2((float)(RandomClamped() * jitterThisTimeSlice),
                                         (float)(RandomClamped() * jitterThisTimeSlice));
@@ -76,7 +77,7 @@ namespace GTA
             //move the target into a position WanderDist in front of the agent
             Vector2 target = m_vWanderTarget + new Vector2(m_dWanderDistance, 0);
 
-            _entity.Side = VectorHelper.GetPerpVector(_entity.Heading);
+            //_entity.Side = VectorHelper.GetPerpVector(_entity.Heading);
 
             //project the target into world space
             Vector2 Target = PointToWorldSpace(target,
@@ -101,14 +102,17 @@ namespace GTA
             {
                 m_vSteeringForce += Wander();
             }
+
             if (useFlee)
             {
                 m_vSteeringForce += Flee(target);
             }
+            
             if (useSeek)
             {
                 m_vSteeringForce += Seek(target);
             }
+
             return m_vSteeringForce;
         }
 
