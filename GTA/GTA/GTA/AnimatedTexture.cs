@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GTA.Common;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -18,8 +19,8 @@ namespace GTA
         private bool Paused;
 
         public float Rotation, Scale, Depth;
-        public Vector2 Origin;
-        public AnimatedTexture(Vector2 Origin, float Rotation, float Scale, float Depth)
+        public Vector2D Origin;
+        public AnimatedTexture(Vector2D Origin, float Rotation, float Scale, float Depth)
         {
             this.Origin = Origin;
             this.Rotation = Rotation;
@@ -52,18 +53,18 @@ namespace GTA
         }
 
         // class AnimatedTexture
-        public void DrawFrame(SpriteBatch Batch, Vector2 screenpos, int sourceY)
+        public void DrawFrame(SpriteBatch Batch, Vector2D screenpos, int sourceY)
         {
             DrawFrame(Batch, Frame, screenpos, sourceY);
         }
 
-        public void DrawFrame(SpriteBatch Batch, int Frame, Vector2 screenpos, int sourceY)
+        public void DrawFrame(SpriteBatch Batch, int Frame, Vector2D screenpos, int sourceY)
         {
             int FrameWidth = myTexture.Width / framecount;
 
             Rectangle sourcerect = new Rectangle(FrameWidth * Frame, sourceY, FrameWidth, myTexture.Height / 7);
-            Batch.Draw(myTexture, screenpos, sourcerect, Color.White,
-                Rotation, Origin, Scale, SpriteEffects.None, Depth);
+            Batch.Draw(myTexture, screenpos.toVector2(), sourcerect, Color.White,
+                Rotation, Origin.toVector2(), Scale, SpriteEffects.None, Depth);
         }
 
         public bool IsPaused

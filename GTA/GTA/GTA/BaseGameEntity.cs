@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GTA.Common;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -11,7 +12,7 @@ namespace GTA
     abstract class BaseGameEntity
     {
         public int Id { get; set; }
-        public Vector2 Pos { get; set; }
+        public Vector2D Pos { get; set; }
         public float Scale { get; set; }
         public float Bradius { get; set; }
 

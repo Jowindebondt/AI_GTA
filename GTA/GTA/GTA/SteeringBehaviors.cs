@@ -1,4 +1,5 @@
 ﻿using System;
+using GTA.Common;
 using Microsoft.Xna.Framework;
 
 namespace GTA
@@ -6,14 +7,14 @@ namespace GTA
     class SteeringBehaviors
     {
         private Random rand;
-        Vector2 m_vWanderTarget;
-        private Vector2 target;
+        Vector2D m_vWanderTarget;
+        private Vector2D target;
 
-        private Vector2 m_vSteeringForce;
+        private Vector2D m_vSteeringForce;
 
-        double m_dWanderJitter;
-        double _mDWanderRadius;
-        float m_dWanderDistance;
+        public double m_dWanderJitter;
+        public double _mDWanderRadius;
+        public float m_dWanderDistance;
         private MovingEntity _entity;
 
         private bool useWander;
@@ -27,42 +28,46 @@ namespace GTA
         {
             _entity = entity;
             rand = new Random();
-            _mDWanderRadius = 1.2f;
-            m_dWanderDistance = 10.0f;
-            m_vSteeringForce = new Vector2();
-            m_dWanderJitter = 40.0f;
+            _mDWanderRadius = 2.5f;
+            m_dWanderDistance = 3f;
+            m_vSteeringForce = new Vector2D();
+            m_dWanderJitter = 40f;
+            double rotation = VectorHelper.RandFloat() * (Math.PI * 2);
+            m_vWanderTarget = new Vector2D(_mDWanderRadius * Math.Cos(rotation), _mDWanderRadius * Math.Sin(rotation));
         }
 
-        private Vector2 Flee(Vector2 target)
+        private Vector2D Flee(Vector2D target)
         {
-            if (Vector2.DistanceSquared(_entity.Pos, target) > PANICDISTANCESQ)
-                return Vector2.Zero;
+            if (Vector2D.Vec2DDistanceSq(_entity.Pos, target) > PANICDISTANCESQ)
+                return new Vector2D(0,0);
 
-            Vector2 desiredVelocity = Vector2.Normalize(_entity.Pos - target) * _entity.MaxSpeed;
+            Vector2D desiredVelocity = Vector2D.Vec2DNormalize(_entity.Pos - target) * _entity.MaxSpeed;
             return desiredVelocity - _entity.Velocity;
         }
 
-        private Vector2 Seek(Vector2 target)
+        private Vector2D Seek(Vector2D target)
         {
-            Vector2 desiredVelocity = Vector2.Normalize(target - _entity.Pos) * _entity.MaxSpeed;
+            Vector2D desiredVelocity = Vector2D.Vec2DNormalize(target - _entity.Pos) * _entity.MaxSpeed;
             return desiredVelocity - _entity.Velocity;
         }
 
-        private Vector2 Arrive(Vector2 target)
+        private Vector2D Arrive(Vector2D target)
         {
-            return new Vector2();
+            return new Vector2D();
         }
 
-        private Vector2 Wander()
+        private Vector2D Wander()
         {
             //this behavior is dependent on the update rate, so this line must
             //be included when using time independent framerate.
             var jitterThisTimeSlice = m_dWanderJitter * _entity.TimeEllapsed;
+
             if (jitterThisTimeSlice <= 0)
                 jitterThisTimeSlice = 1;
+            
             //first, add a small random vector to the target's position
-            m_vWanderTarget = new Vector2((float)(RandomClamped() * jitterThisTimeSlice),
-                                        (float)(RandomClamped() * jitterThisTimeSlice));
+            m_vWanderTarget += new Vector2D((float)(VectorHelper.RandomClamped() * jitterThisTimeSlice),
+                                        (float)(VectorHelper.RandomClamped() * jitterThisTimeSlice));
 
             //reproject this new vector back on to a unit circle
             m_vWanderTarget.Normalize();
@@ -71,32 +76,27 @@ namespace GTA
             //of the wander circle
             m_vWanderTarget *= (float)_mDWanderRadius;
 
-            //m_vWanderTarget.X *= (float)_mDWanderRadius;
-            //m_vWanderTarget.Y *= (float)_mDWanderRadius;
-
             //move the target into a position WanderDist in front of the agent
-            Vector2 target = m_vWanderTarget + new Vector2(m_dWanderDistance, 0);
-
-            //_entity.Side = VectorHelper.GetPerpVector(_entity.Heading);
+            Vector2D target = m_vWanderTarget + new Vector2D(m_dWanderDistance, 0);
 
             //project the target into world space
-            Vector2 Target = PointToWorldSpace(target,
+            _entity.Target = PointToWorldSpace(target,
                                                  _entity.Heading,
                                                  _entity.Side,
                                                  _entity.Pos);
 
             //and steer towards it
-            return Target - _entity.Pos;
+            return _entity.Target - _entity.Pos;
         }
 
-        private Vector2 Explore(Vector2 vector)
+        private Vector2D Explore(Vector2D vector)
         {
-            return new Vector2();
+            return new Vector2D();
         }
 
-        public Vector2 Calculate()
+        public Vector2D Calculate()
         {
-            m_vSteeringForce = Vector2.Zero;
+            m_vSteeringForce = new Vector2D(0,0);
 
             if (useWander)
             {
@@ -116,14 +116,14 @@ namespace GTA
             return m_vSteeringForce;
         }
 
-        public Vector2 ForwardComponent(Vector2 vector)
+        public Vector2D ForwardComponent(Vector2D vector)
         {
-            return new Vector2();
+            return new Vector2D();
         }
 
-        public Vector2 SideComponent(Vector2 vector)
+        public Vector2D SideComponent(Vector2D vector)
         {
-            return new Vector2();
+            return new Vector2D();
         }
 
         public void SetPath()
@@ -131,7 +131,7 @@ namespace GTA
             
         }
 
-        public void SetTarget(Vector2 vector)
+        public void SetTarget(Vector2D vector)
         {
             target = vector;
         }
@@ -186,21 +186,22 @@ namespace GTA
             useWander = false;
         }
 
-        private double RandomClamped()
+        private Vector2D PointToWorldSpace(Vector2D point, Vector2D AgentHeading, Vector2D AgentSide, Vector2D AgentPosition)
         {
-            return rand.NextDouble()/* - rand.NextDouble()*/;
-        }
-
-        private Vector2 PointToWorldSpace(Vector2 point, Vector2 AgentHeading, Vector2 AgentSide, Vector2 AgentPosition)
-        {
-            Vector2 TransPoint = point;
+            //make a copy of the point
+            Vector2D TransPoint = new Vector2D(point.X, point.Y); ;
 
             //create a transformation matrix
-            Matrix matTransform = Matrix.CreateRotationX(MathHelper.ToRadians(Vector2.Dot(AgentHeading, AgentSide)));
-            matTransform += Matrix.CreateTranslation(AgentPosition.X, AgentPosition.Y, 0);
+            C2DMatrix matTransform = new C2DMatrix();
+
+            //rotate
+            matTransform.Rotate(AgentHeading, AgentSide);
+
+            //and translate
+            matTransform.Translate(AgentPosition.X, AgentPosition.Y);
 
             //now transform the vertices
-            TransPoint = Vector2.Transform(TransPoint, matTransform);
+            matTransform.TransformVector2D(TransPoint);
 
             return TransPoint;
         }

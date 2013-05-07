@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System;
+using GTA.Common;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+
 namespace GTA
 {
     class World
@@ -13,18 +15,20 @@ namespace GTA
         private MovingEntity thug;
         private World()
         {
-            thug = new Thug() {Pos = new Vector2(800, 450), _sourceY = 0};
-            Citizen c1 = new Citizen() {Pos = new Vector2(36, 20), _sourceY = 16, enemy = thug, Flee = true, Wander = true, Seek = false};
-            Citizen c2 = new Citizen() { Pos = new Vector2(52, 20), _sourceY = 32, enemy = thug, Flee = false, Wander = false, Seek = true };
+            thug = new Thug() {Pos = new Vector2D(800, 450), _sourceY = 0};
+            _entities = new List<BaseGameEntity>();
+            Random rand = new Random();
+            for (int i = 0; i < 1000; i++)
+            {
+                bool seek = rand.Next(0, 2) == 1;
+                bool flee = !seek;
+                bool wander = !seek;
 
-            _entities = new List<BaseGameEntity> { 
-                c1,
-                c2
-                /*new Citizen() { Pos = new Vector2(68, 20), _sourceY = 48},
-                new Citizen() { Pos = new Vector2(84, 20), _sourceY = 64}, 
-                new Citizen() { Pos = new Vector2(100, 20), _sourceY = 80}, 
-                new Citizen() { Pos = new Vector2(116, 20), _sourceY = 96}*/
-            };
+                int citizenNr = rand.Next(1, 7);
+
+                var citizen = new Citizen() { Pos = new Vector2D(rand.Next(0, 1600), rand.Next(0, 800)), _sourceY = citizenNr * 16, enemy = thug, Flee = flee, Wander = wander, Seek = seek };
+                _entities.Add(citizen);
+            }
         }
 
         public static World GetInstance()
@@ -55,21 +59,22 @@ namespace GTA
 
         public void UpdateThug(Keys key)
         {
+            int speed = 5;
             if (key == Keys.Up)
             {
-                thug.Pos = new Vector2(thug.Pos.X, thug.Pos.Y - 8);
+                thug.Pos = new Vector2D(thug.Pos.X, thug.Pos.Y - speed);
             }
             if (key == Keys.Down)
             {
-                thug.Pos = new Vector2(thug.Pos.X, thug.Pos.Y + 8);
+                thug.Pos = new Vector2D(thug.Pos.X, thug.Pos.Y + speed);
             }
             if (key == Keys.Left)
             {
-                thug.Pos = new Vector2(thug.Pos.X - 8, thug.Pos.Y);
+                thug.Pos = new Vector2D(thug.Pos.X - speed, thug.Pos.Y);
             }
             if (key == Keys.Right)
             {
-                thug.Pos = new Vector2(thug.Pos.X + 8, thug.Pos.Y);
+                thug.Pos = new Vector2D(thug.Pos.X + speed, thug.Pos.Y);
             }
         }
     }

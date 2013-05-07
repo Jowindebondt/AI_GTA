@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GTA.Common;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -18,15 +19,21 @@ namespace GTA
         public Citizen()
         {
             SteeringBehaviors = new SteeringBehaviors(this);
-            
-            _personTexture = new AnimatedTexture(Vector2.Zero, 0, 1, 0);
-            Mass = 1f;
-            Heading = new Vector2(1, 50);
-            MaxSpeed = 100f;
+            _personTexture = new AnimatedTexture(new Vector2D(0,0), 0, 1, 0);
+            Mass = 0.1f;
+            double rotation = VectorHelper.RandFloat()*(Math.PI*2);
+            Heading = new Vector2D((float)Math.Sin(rotation), (float)-Math.Cos(rotation));
+            MaxSpeed = 50f;
+            MaxForce = 50f;
+            Velocity = new Vector2D(0, 0);
+            Side = Heading.Perp();
+            Target = new Vector2D(0,0);
         }
 
         public override void Update(float timeElapsed)
         {
+            TimeEllapsed = timeElapsed;
+
             if (Flee)
                 SteeringBehaviors.FleeOn();
             else
@@ -45,20 +52,25 @@ namespace GTA
             SteeringBehaviors.SetTarget(enemy.Pos);
 
             SteeringForce = SteeringBehaviors.Calculate();
-            Rotation = SteeringForce;
-            Vector2 acceleration = SteeringForce / Mass;
+            
+            Vector2D acceleration = SteeringForce / Mass;
 
             Velocity += acceleration * timeElapsed;
 
-            Velocity = VectorHelper.MaxLimit(Velocity, MaxSpeed);
-            if (Velocity.Length() > 0.001)
-                Rotation = Velocity * timeElapsed;
+            Velocity.Truncate(MaxSpeed);
+
             Pos += Velocity * timeElapsed;
 
-            if (Pos.X > 1600) { Pos = new Vector2(0, Pos.Y); }
-            if (Pos.X < 0) { Pos = new Vector2(1600, Pos.Y); }
-            if (Pos.Y < 0) { Pos = new Vector2(Pos.X, 900); }
-            if (Pos.Y > 900) { Pos = new Vector2(Pos.X, 0);}
+            if (Velocity.LengthSq() > 0.00000001)
+            {
+                Heading = Vector2D.Vec2DNormalize(Velocity);
+                Side = Heading.Perp();
+            }
+
+            if (Pos.X > 1600) { Pos = new Vector2D(0, Pos.Y); }
+            if (Pos.X < 0) { Pos = new Vector2D(1600, Pos.Y); }
+            if (Pos.Y < 0) { Pos = new Vector2D(Pos.X, 900); }
+            if (Pos.Y > 900) { Pos = new Vector2D(Pos.X, 0);}
 
             _personTexture.UpdateFrame(TimeEllapsed);
         }
