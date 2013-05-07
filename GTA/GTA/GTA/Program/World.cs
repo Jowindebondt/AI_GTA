@@ -18,7 +18,7 @@ namespace GTA
             thug = new Thug() {Pos = new Vector2D(800, 450), _sourceY = 0};
             _entities = new List<BaseGameEntity>();
             Random rand = new Random();
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 100; i++)
             {
                 bool seek = rand.Next(0, 2) == 1;
                 bool flee = !seek;
@@ -59,7 +59,7 @@ namespace GTA
 
         public void UpdateThug(Keys key)
         {
-            int speed = 5;
+            const int speed = 5;
             if (key == Keys.Up)
             {
                 thug.Pos = new Vector2D(thug.Pos.X, thug.Pos.Y - speed);
