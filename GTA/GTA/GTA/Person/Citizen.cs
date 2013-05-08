@@ -18,7 +18,7 @@ namespace GTA
 
         public Citizen()
         {
-            SteeringBehaviors = new SteeringBehaviors(this);
+            SteeringBehaviors = new SteeringBehaviors(this, enemy);
             _personTexture = new AnimatedTexture(new Vector2D(0,0), 0, 1, 0);
             Mass = 0.1f;
             double rotation = VectorHelper.RandFloat()*(Math.PI*2);
@@ -77,7 +77,7 @@ namespace GTA
 
         public override void Render(SpriteBatch spriteBatch)
         {
-            _personTexture.DrawFrame(spriteBatch, Pos, _sourceY);
+            _personTexture.DrawFrame(spriteBatch, Pos, _sourceY, Heading);
         }
 
         public override void Load(GraphicsDevice graphicsDevice, ContentManager content)

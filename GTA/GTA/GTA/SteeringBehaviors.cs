@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using GTA.Common;
 using Microsoft.Xna.Framework;
 
@@ -15,6 +16,9 @@ namespace GTA
         public double m_dWanderJitter;
         public double _mDWanderRadius;
         public float m_dWanderDistance;
+        public double m_dViewDistance;
+        public double m_dWeightSeparation;
+
         private MovingEntity _entity;
 
         private bool useWander;
@@ -24,7 +28,9 @@ namespace GTA
 
         private const double PANICDISTANCESQ = 100*100;
 
-        public SteeringBehaviors(MovingEntity entity)
+        private MovingEntity m_pTargetAgent1;
+
+        public SteeringBehaviors(MovingEntity entity, MovingEntity enemy)
         {
             _entity = entity;
             rand = new Random();
@@ -32,8 +38,13 @@ namespace GTA
             m_dWanderDistance = 3f;
             m_vSteeringForce = new Vector2D();
             m_dWanderJitter = 40f;
+
+            m_dViewDistance = 40;
+            m_dWeightSeparation = 9000;
+
             double rotation = VectorHelper.RandFloat() * (Math.PI * 2);
             m_vWanderTarget = new Vector2D(_mDWanderRadius * Math.Cos(rotation), _mDWanderRadius * Math.Sin(rotation));
+            m_pTargetAgent1 = enemy;
         }
 
         private Vector2D Flee(Vector2D target)
@@ -94,9 +105,35 @@ namespace GTA
             return new Vector2D();
         }
 
+        private Vector2D Separation(List<MovingEntity> neighbors)
+        {
+            Vector2D SteeringForce = new Vector2D(0.0, 0.0);
+
+            foreach (MovingEntity neighbor in neighbors)
+            {
+                //make sure this agent isn't included in the calculations and that
+                //the agent being examined is close enough. 
+                //***also make sure it doesn't include the evade target ***
+                if ((neighbor != _entity) && neighbor.IsTagged &&
+                (neighbor != m_pTargetAgent1))
+                {
+                    Vector2D ToAgent = (_entity.Pos - neighbor.Pos);
+
+                    //scale the force inversely proportional to the agents distance from its neighbor.
+                    SteeringForce += Vector2D.Vec2DNormalize(ToAgent) / ToAgent.Length();
+                }
+            }
+
+            return SteeringForce;
+        }
+
         public Vector2D Calculate()
         {
             m_vSteeringForce = new Vector2D(0,0);
+
+            //tag neighbors if any of the following 3 group behaviors are switched on
+            World.GetInstance().TagAgentsWithinViewRange(_entity, m_dViewDistance);
+            
 
             if (useWander)
             {
@@ -112,6 +149,8 @@ namespace GTA
             {
                 m_vSteeringForce += Seek(target);
             }
+
+            m_vSteeringForce += Separation(World.GetInstance()._entities) * m_dWeightSeparation;
 
             return m_vSteeringForce;
         }

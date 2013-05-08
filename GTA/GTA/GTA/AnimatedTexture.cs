@@ -53,8 +53,10 @@ namespace GTA
         }
 
         // class AnimatedTexture
-        public void DrawFrame(SpriteBatch Batch, Vector2D screenpos, int sourceY)
+        public void DrawFrame(SpriteBatch Batch, Vector2D screenpos, int sourceY, Vector2D heading)
         {
+            Rotation = (float)Math.Atan2(heading.Y, heading.X) - 1.5f;
+
             DrawFrame(Batch, Frame, screenpos, sourceY);
         }
 

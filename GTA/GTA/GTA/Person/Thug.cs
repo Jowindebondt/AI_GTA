@@ -11,6 +11,7 @@ namespace GTA
         public Thug()
         {
             _personTexture = new AnimatedTexture(new Vector2D(0,0), 0, 1, 0);
+            Heading = new Vector2D(0,0);
         }
 
         public override void Update(float timeElapsed)
@@ -26,7 +27,7 @@ namespace GTA
 
         public override void Render(SpriteBatch spriteBatch)
         {
-            _personTexture.DrawFrame(spriteBatch, Pos, _sourceY);
+            _personTexture.DrawFrame(spriteBatch, Pos, _sourceY, Heading);
         }
 
         public override void Load(GraphicsDevice graphicsDevice, ContentManager content)
