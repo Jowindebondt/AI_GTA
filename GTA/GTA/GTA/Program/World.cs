@@ -20,7 +20,7 @@ namespace GTA
             var rand = new Random();
             _entities.Add(thug);
 
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 200; i++)
             {
                 bool seek = rand.Next(0, 2) == 1;
                 bool flee = !seek;
@@ -28,8 +28,8 @@ namespace GTA
 
                 int citizenNr = rand.Next(1, 7);
 
-                //var citizen = new Citizen() { Pos = new Vector2D(rand.Next(0, 1600), rand.Next(0, 800)), _sourceY = citizenNr * 16, enemy = thug, Flee = flee, Wander = wander, Seek = seek };
-                var citizen = new Citizen() { Pos = new Vector2D(rand.Next(0, 1600), rand.Next(0, 800)), _sourceY = citizenNr * 16, enemy = thug, Flee = false, Wander = false, Seek = true };
+                var citizen = new Citizen() { Pos = new Vector2D(rand.Next(0, 1600), rand.Next(0, 800)), _sourceY = citizenNr * 16, enemy = thug, Flee = flee, Wander = wander, Seek = seek };
+                //var citizen = new Citizen() { Pos = new Vector2D(rand.Next(0, 1600), rand.Next(0, 800)), _sourceY = citizenNr * 16, enemy = thug, Flee = false, Wander = false, Seek = true };
                 _entities.Add(citizen);
             }
         }

@@ -133,7 +133,8 @@ namespace GTA
 
             //tag neighbors if any of the following 3 group behaviors are switched on
             World.GetInstance().TagAgentsWithinViewRange(_entity, m_dViewDistance);
-            
+
+            m_vSteeringForce += Separation(World.GetInstance()._entities) * m_dWeightSeparation;
 
             if (useWander)
             {
@@ -149,8 +150,6 @@ namespace GTA
             {
                 m_vSteeringForce += Seek(target);
             }
-
-            m_vSteeringForce += Separation(World.GetInstance()._entities) * m_dWeightSeparation;
 
             return m_vSteeringForce;
         }
