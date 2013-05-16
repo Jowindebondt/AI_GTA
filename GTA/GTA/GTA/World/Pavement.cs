@@ -12,21 +12,22 @@ namespace GTA
         public Pavement()
         {
             Blocking = Blocking.Car;
+            Bradius = 64;
         }
 
         public override void Update(float timeElapsed)
         {
-            throw new NotImplementedException();
+            /*throw new NotImplementedException();*/
         }
 
         public override void Render(SpriteBatch spriteBatch)
         {
-            throw new NotImplementedException();
+            /*throw new NotImplementedException();*/
         }
 
         public override void Load(GraphicsDevice graphicsDevice, ContentManager content)
         {
-            throw new NotImplementedException();
+            /*throw new NotImplementedException();*/
         }
     }
 }

@@ -37,9 +37,17 @@ namespace GTA
                 MovingEntities.Add(citizen);
             }
 
-            ObstacleEntities.Add(new Building {Pos = new Vector2D(0,0)});
-            ObstacleEntities.Add(new Road {Pos = new Vector2D(64,0)});
-            ObstacleEntities.Add(new Pavement {Pos = new Vector2D(0,64)});
+            ObstacleEntities.Add(new Building { Pos = new Vector2D(800, 450) });
+            ObstacleEntities.Add(new Road { Pos = new Vector2D(864, 450) });
+            ObstacleEntities.Add(new Pavement { Pos = new Vector2D(736, 450) });
+
+            ObstacleEntities.Add(new Building { Pos = new Vector2D(800, 514) });
+            ObstacleEntities.Add(new Road { Pos = new Vector2D(864, 514) });
+            ObstacleEntities.Add(new Pavement { Pos = new Vector2D(736, 514) });
+
+            ObstacleEntities.Add(new Building { Pos = new Vector2D(800, 386) });
+            ObstacleEntities.Add(new Road { Pos = new Vector2D(864, 386) });
+            ObstacleEntities.Add(new Pavement { Pos = new Vector2D(736, 386) });
         }
 
         public static World GetInstance()
@@ -56,15 +64,19 @@ namespace GTA
 
         public void Update(float timeElapsed)
         {
-            //thug.Update(timeElapsed);
             foreach (var entity in MovingEntities)
+                entity.Update(timeElapsed);
+
+            foreach (var entity in ObstacleEntities)
                 entity.Update(timeElapsed);
         }
 
         public void Render(SpriteBatch spriteBatch)
         {
-            //thug.Render(spriteBatch);
             foreach (var entity in MovingEntities)
+                entity.Render(spriteBatch);
+
+            foreach (var entity in ObstacleEntities)
                 entity.Render(spriteBatch);
         }
 
@@ -127,7 +139,7 @@ namespace GTA
             }//next entity
         }
 
-        internal void TagObstaclesWithinViewRange(MovingEntity _entity, double m_dDBoxLength)
+        internal void TagObstaclesWithinViewRange(MovingEntity pEntity, double radius)
         {
             //iterate through all entities checking for range
             foreach (BaseGameEntity curEntity in ObstacleEntities)

@@ -20,6 +20,7 @@ namespace GTA
         public double m_dWeightSeparation;
         public double m_dDBoxLength;
         public double MinDetectionBoxLength;
+        public double m_dWeightObstacleAvoidance;
 
         private MovingEntity _entity;
 
@@ -43,6 +44,9 @@ namespace GTA
 
             m_dViewDistance = 40;
             m_dWeightSeparation = 9000;
+
+            MinDetectionBoxLength = 10;
+            m_dWeightObstacleAvoidance = double.MaxValue;
 
             double rotation = VectorHelper.RandFloat() * (Math.PI * 2);
             m_vWanderTarget = new Vector2D(_mDWanderRadius * Math.Cos(rotation), _mDWanderRadius * Math.Sin(rotation));
@@ -107,14 +111,12 @@ namespace GTA
             return new Vector2D();
         }
 
-        public Vector2D ObstacleAvoidance(List<BaseGameEntity> obstacles)
+        public Vector2D ObstacleAvoidance(List<ObstacleEntity> obstacles)
         {
             //the detection box length is proportional to the agent's velocity
             m_dDBoxLength = MinDetectionBoxLength +
                             (_entity.Speed / _entity.MaxSpeed) * MinDetectionBoxLength;
 
-            //tag all obstacles within range of the box for processing
-            World.GetInstance().TagObstaclesWithinViewRange(_entity, m_dDBoxLength);
 
             //this will keep track of the closest intersecting obstacle (CIB)
             BaseGameEntity ClosestIntersectingObstacle = null;
@@ -196,34 +198,34 @@ namespace GTA
                 // efficient direction to turn when avoiding the obstacle
                 Vector2D targetLoc = null;
 
-                if (On(behavior_type.follow_path) && (!m_pPath.Finished()))
-                {
-                    targetLoc = m_pPath.CurrentWaypoint();
-                }
-                else if ((On(behavior_type.seek) || On(behavior_type.arrive)) && (!Vector2D.IsNull(GameWorld.Instance.TargetPos)))
-                {
-                    targetLoc = GameWorld.Instance.TargetPos;
-                }
-                else if ((On(behavior_type.pursuit) || On(behavior_type.offset_pursuit)) && (m_pTargetAgent1 != null))
-                {
-                    targetLoc = m_pTargetAgent1.Pos;
-                }
+                //if (On(behavior_type.follow_path) && (!m_pPath.Finished()))
+                //{
+                //    targetLoc = m_pPath.CurrentWaypoint();
+                //}
+                //else if ((On(behavior_type.seek) || On(behavior_type.arrive)) && (!Vector2D.IsNull(GameWorld.Instance.TargetPos)))
+                //{
+                //    targetLoc = GameWorld.Instance.TargetPos;
+                //}
+                //else if ((On(behavior_type.pursuit) || On(behavior_type.offset_pursuit)) && (m_pTargetAgent1 != null))
+                //{
+                //    targetLoc = m_pTargetAgent1.Pos;
+                //}
 
                 if (!Vector2D.IsNull(targetLoc))
                 {
                     // Get normalised direction to obstacle from current location
-                    Vector2D dirToObs = ClosestIntersectingObstacle.Pos - m_parentMovingEntity.Pos;
+                    Vector2D dirToObs = ClosestIntersectingObstacle.Pos - _entity.Pos;
                     dirToObs.Normalize();
 
                     // Calculate the two "apex choices" on the obstacles sphere
                     Vector2D interceptRightHand = Vector2D.ProjectedPerp(ClosestIntersectingObstacle.Pos,
                                                                                     dirToObs,
-                                                                                    ClosestIntersectingObstacle.BRadius,
+                                                                                    ClosestIntersectingObstacle.Bradius,
                                                                                     false);
 
                     Vector2D interceptLeftHand = Vector2D.ProjectedPerp(ClosestIntersectingObstacle.Pos,
                                                                                     dirToObs,
-                                                                                    ClosestIntersectingObstacle.BRadius,
+                                                                                    ClosestIntersectingObstacle.Bradius,
                                                                                     true);
 
                     // Calculate and compare the distances to determine the preferred "side" of the sphere.
@@ -236,21 +238,21 @@ namespace GTA
                     }
                 }
 
-                SteeringForce.Y = ClosestIntersectingObstacle.BRadius * multiplier;
+                SteeringForce.Y = ClosestIntersectingObstacle.Bradius * multiplier;
 
                 //apply a braking force proportional to the obstacles distance from
                 //the vehicle. 
                 double BrakingWeight = 0.2;
 
-                SteeringForce.X = (ClosestIntersectingObstacle.BRadius -
+                SteeringForce.X = (ClosestIntersectingObstacle.Bradius -
                                    ClosestObstacleLocalPos.X) *
                                    BrakingWeight;
             }
 
             //finally, convert the steering vector from local to world space
-            Vector2D vecReturn = Utils.VectorToWorldSpace(SteeringForce,
-                                      m_parentMovingEntity.Heading(),
-                                      m_parentMovingEntity.Side());
+            Vector2D vecReturn = VectorToWorldSpace(SteeringForce,
+                                      _entity.Heading,
+                                      _entity.Side);
 
             return vecReturn;
         }
@@ -283,8 +285,10 @@ namespace GTA
 
             //tag neighbors if any of the following 3 group behaviors are switched on
             World.GetInstance().TagAgentsWithinViewRange(_entity, m_dViewDistance);
+            World.GetInstance().TagObstaclesWithinViewRange(_entity, m_dDBoxLength);
 
             m_vSteeringForce += Separation(World.GetInstance().MovingEntities) * m_dWeightSeparation;
+            m_vSteeringForce += ObstacleAvoidance(World.GetInstance().ObstacleEntities) * m_dWeightObstacleAvoidance;
 
             if (useWander)
             {
@@ -394,7 +398,7 @@ namespace GTA
             return TransPoint;
         }
 
-        private Vector2D PointToLocalSpace(Vector2D vector2D, Vector2D vector2D_2, Vector2D vector2D_3, Vector2D vector2D_4)
+        private Vector2D PointToLocalSpace(Vector2D point, Vector2D AgentHeading, Vector2D AgentSide, Vector2D AgentPosition)
         {
             //make a copy of the point
             Vector2D TransPoint = new Vector2D(point.X, point.Y);
@@ -414,6 +418,23 @@ namespace GTA
             matTransform.TransformVector2D(TransPoint);
 
             return TransPoint;
+        }
+
+        private Vector2D VectorToWorldSpace(Vector2D vec, Vector2D AgentHeading, Vector2D AgentSide)
+        {
+            //make a copy of the point
+            Vector2D TransVec = new Vector2D(vec.X, vec.Y); ;
+
+            //create a transformation matrix
+            C2DMatrix matTransform = new C2DMatrix();
+
+            //rotate
+            matTransform.Rotate(AgentHeading, AgentSide);
+
+            //now transform the vertices
+            matTransform.TransformVector2D(TransVec);
+
+            return TransVec;
         }
     }
 }
