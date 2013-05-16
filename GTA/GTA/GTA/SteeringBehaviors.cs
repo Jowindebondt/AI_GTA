@@ -23,6 +23,7 @@ namespace GTA
         public double m_dWeightObstacleAvoidance;
 
         private MovingEntity _entity;
+        private List<Vector2> ExploreTargets; 
 
         private bool useWander;
         private bool useFlee;
@@ -43,7 +44,7 @@ namespace GTA
             m_dWanderJitter = 40f;
 
             m_dViewDistance = 40;
-            m_dWeightSeparation = 9000;
+            m_dWeightSeparation = 5000;
 
             MinDetectionBoxLength = 20;
             m_dWeightObstacleAvoidance = 9000000;
@@ -51,6 +52,17 @@ namespace GTA
             double rotation = VectorHelper.RandFloat() * (Math.PI * 2);
             m_vWanderTarget = new Vector2D(_mDWanderRadius * Math.Cos(rotation), _mDWanderRadius * Math.Sin(rotation));
             m_pTargetAgent1 = enemy;
+
+            ExploreTargets.Add(new Vector2(100,100)); //Left-Top
+            ExploreTargets.Add(new Vector2(100, 500));//Left-Bottom
+            ExploreTargets.Add(new Vector2(800, 500));//Mid-Bottom
+            ExploreTargets.Add(new Vector2(800, 100));//Mid-Top
+            ExploreTargets.Add(new Vector2(1700, 100)); //Right-Top
+            ExploreTargets.Add(new Vector2(1700, 500)); //Right-Bottom
+            ExploreTargets.Add(new Vector2(800, 450)); //Mid-Mid
+            ExploreTargets.Add(new Vector2(100, 450)); // Mid-Left
+            ExploreTargets.Add(new Vector2(1700, 450)); // Mid-Right
+
         }
 
         private Vector2D Flee(Vector2D target)
@@ -106,7 +118,7 @@ namespace GTA
             return _entity.Target - _entity.Pos;
         }
 
-        private Vector2D Explore(Vector2D vector)
+        private Vector2D Explore(Vector2D target)
         {
             return new Vector2D();
         }
@@ -154,8 +166,8 @@ namespace GTA
                             //given by the formula x = cX +/-sqrt(r^2-cY^2) for y=0. 
                             //We only need to look at the smallest positive value of x because
                             //that will be the closest point of intersection.
-                            double cX = LocalPos.X;
-                            double cY = LocalPos.Y;
+                            double cX = LocalPos.X + 32;
+                            double cY = LocalPos.Y + 32;
 
                             //we only need to calculate the sqrt part of the above equation once
                             double SqrtPart = Math.Sqrt(ExpandedRadius * ExpandedRadius - cY * cY);
@@ -287,8 +299,8 @@ namespace GTA
             World.GetInstance().TagAgentsWithinViewRange(_entity, m_dViewDistance);
             World.GetInstance().TagObstaclesWithinViewRange(_entity, m_dDBoxLength);
 
-            m_vSteeringForce += Separation(World.GetInstance().MovingEntities) * m_dWeightSeparation;
             m_vSteeringForce += ObstacleAvoidance(World.GetInstance().ObstacleEntities) * m_dWeightObstacleAvoidance;
+            m_vSteeringForce += Separation(World.GetInstance().MovingEntities) * m_dWeightSeparation;
 
             if (useWander)
             {
