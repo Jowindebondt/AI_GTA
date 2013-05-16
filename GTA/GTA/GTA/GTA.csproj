@@ -111,8 +111,10 @@
   <ItemGroup>
     <Compile Include="AnimatedTexture.cs" />
     <Compile Include="BaseGameEntity.cs" />
+    <Compile Include="Blocking.cs" />
     <Compile Include="Common\C2DMatrix.cs" />
     <Compile Include="Common\Vector2D.cs" />
+    <Compile Include="ObstacleEntity.cs" />
     <Compile Include="Person\Citizen.cs" />
     <Compile Include="MovingEntity.cs" />
     <Compile Include="Person\Person.cs" />
@@ -123,6 +125,9 @@
     <Compile Include="Person\Thug.cs" />
     <Compile Include="Program\World.cs" />
     <Compile Include="Common\VectorHelper.cs" />
+    <Compile Include="World\Building.cs" />
+    <Compile Include="World\Pavement.cs" />
+    <Compile Include="World\Road.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
