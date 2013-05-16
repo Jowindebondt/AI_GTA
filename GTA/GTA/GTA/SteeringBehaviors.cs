@@ -45,8 +45,8 @@ namespace GTA
             m_dViewDistance = 40;
             m_dWeightSeparation = 9000;
 
-            MinDetectionBoxLength = 10;
-            m_dWeightObstacleAvoidance = double.MaxValue;
+            MinDetectionBoxLength = 20;
+            m_dWeightObstacleAvoidance = 9000000;
 
             double rotation = VectorHelper.RandFloat() * (Math.PI * 2);
             m_vWanderTarget = new Vector2D(_mDWanderRadius * Math.Cos(rotation), _mDWanderRadius * Math.Sin(rotation));

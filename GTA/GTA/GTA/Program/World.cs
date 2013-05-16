@@ -24,7 +24,7 @@ namespace GTA
 
             MovingEntities.Add(thug);
 
-            for (int i = 0; i < 200; i++)
+            for (int i = 0; i < 50; i++)
             {
                 bool seek = rand.Next(0, 2) == 1;
                 bool flee = !seek;
@@ -32,8 +32,9 @@ namespace GTA
 
                 int citizenNr = rand.Next(1, 7);
 
-                var citizen = new Citizen() { Pos = new Vector2D(rand.Next(0, 1600), rand.Next(0, 800)), _sourceY = citizenNr * 16, enemy = thug, Flee = flee, Wander = wander, Seek = seek };
-                //var citizen = new Citizen() { Pos = new Vector2D(rand.Next(0, 1600), rand.Next(0, 800)), _sourceY = citizenNr * 16, enemy = thug, Flee = false, Wander = false, Seek = true };
+                //var citizen = new Citizen() { Pos = new Vector2D(rand.Next(100, 1500), rand.Next(100, 700)), _sourceY = citizenNr * 16, enemy = thug, Flee = flee, Wander = wander, Seek = seek };
+                //var citizen = new Citizen() { Pos = new Vector2D(rand.Next(100, 1500), rand.Next(100, 700)), _sourceY = citizenNr * 16, enemy = thug, Flee = false, Wander = false, Seek = true };
+                var citizen = new Citizen() { Pos = new Vector2D(rand.Next(100, 1500), rand.Next(100, 700)), _sourceY = citizenNr * 16, enemy = thug, Flee = true, Wander = true, Seek = false };
                 MovingEntities.Add(citizen);
             }
 
@@ -41,19 +42,16 @@ namespace GTA
             {
                 for (int y = 0; y < 14; y++)
                 {
-                    if (y == 0 || y == 14)
+                    if (y == 0 || y == 13)
                     {
                         ObstacleEntities.Add(new Building { Pos = new Vector2D(x * 64, y * 64) });
                     }
-                    else if(x == 0 || x == 14)
+                    else if(x == 0 || x == 24)
                     {
                         ObstacleEntities.Add(new Building { Pos = new Vector2D(x * 64, y * 64) }); 
                     }
                 } 
             }
-            //ObstacleEntities.Add(new Building {Pos = new Vector2D(0,0)});
-            //ObstacleEntities.Add(new Road {Pos = new Vector2D(64,0)});
-            //ObstacleEntities.Add(new Pavement {Pos = new Vector2D(0,64)});
         }
 
         public static World GetInstance()
@@ -63,8 +61,10 @@ namespace GTA
 
         public void Load(GraphicsDevice graphicsDevice, ContentManager content)
         {
-            thug.Load(graphicsDevice, content);
             foreach (var entity in MovingEntities)
+                entity.Load(graphicsDevice, content);
+
+            foreach (var entity in ObstacleEntities)
                 entity.Load(graphicsDevice, content);
         }
 
@@ -79,10 +79,10 @@ namespace GTA
 
         public void Render(SpriteBatch spriteBatch)
         {
-            foreach (var entity in MovingEntities)
-                entity.Render(spriteBatch);
-
             foreach (var entity in ObstacleEntities)
+                entity.Render(spriteBatch); 
+            
+            foreach (var entity in MovingEntities)
                 entity.Render(spriteBatch);
         }
 
@@ -148,9 +148,8 @@ namespace GTA
         internal void TagObstaclesWithinViewRange(MovingEntity pEntity, double radius)
         {
             //iterate through all entities checking for range
-            foreach (BaseGameEntity curEntity in ObstacleEntities)
+            foreach (ObstacleEntity curEntity in ObstacleEntities)
             {
-
                 //first clear any current tag
                 curEntity.IsTagged = false;
 
@@ -162,9 +161,10 @@ namespace GTA
 
                 //if entity within range, tag for further consideration. (working in
                 //distance-squared space to avoid sqrts)
-                if ((curEntity != pEntity) && (to.LengthSq() < range * range))
+                if ((to.LengthSq() < range * range))
                 {
-                    curEntity.IsTagged = true;
+                    if (pEntity.GetType() == typeof(Citizen) && (curEntity.Blocking == Blocking.All || curEntity.Blocking == Blocking.Person))
+                        curEntity.IsTagged = true;
                 }
 
             }//next entity
