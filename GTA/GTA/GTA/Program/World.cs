@@ -197,6 +197,40 @@ namespace GTA
                     nextNode.addEdge(new Edge(currentNode)); 
                 }
             }
+
+            foreach (var node in _graph.getNodes())
+            {
+                foreach (var obstacleEntity in ObstacleEntities)
+                {
+                    if (obstacleEntity.GetType() != typeof(Building)) continue;
+                    
+                    if (node._p.X >= obstacleEntity.Pos.X && node._p.X <= obstacleEntity.Pos.X + 64 &&
+                        node._p.Y >= obstacleEntity.Pos.Y && node._p.Y <= obstacleEntity.Pos.Y + 64)
+                    {
+                        int totalEdges = node._edges.Count;
+                        int count = 0;
+                        while (true)
+                        {
+                            if (count == totalEdges) break;
+
+                            Edge currentEdge = node._edges[count];
+
+                            if (currentEdge._nextNode._p.X >= obstacleEntity.Pos.X &&
+                                currentEdge._nextNode._p.X <= obstacleEntity.Pos.X + 64 &&
+                                currentEdge._nextNode._p.Y >= obstacleEntity.Pos.Y &&
+                                currentEdge._nextNode._p.Y <= obstacleEntity.Pos.Y + 64)
+                            {
+                                currentEdge._nextNode._edges.Remove(
+                                    currentEdge._nextNode._edges.Find(e => e._nextNode == node));
+                                node._edges.Remove(currentEdge);
+                                totalEdges--;
+                                continue;
+                            }
+                            count++;
+                        }
+                    }
+                }
+            }
         }
 
         public void TagAgentsWithinViewRange(BaseGameEntity pEntity, double radius)
