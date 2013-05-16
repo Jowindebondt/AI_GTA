@@ -11,14 +11,18 @@ namespace GTA
     class World
     {
         private static World _instance;
-        public readonly List<MovingEntity> _entities;
+        public readonly List<MovingEntity> MovingEntities;
+        public readonly List<ObstacleEntity> ObstacleEntities;
         private MovingEntity thug;
         private World()
         {
-            thug = new Thug() {Pos = new Vector2D(800, 450), _sourceY = 0};
-            _entities = new List<MovingEntity>();
+            MovingEntities = new List<MovingEntity>();
+            ObstacleEntities = new List<ObstacleEntity>();
             var rand = new Random();
-            _entities.Add(thug);
+            
+            thug = new Thug() { Pos = new Vector2D(800, 450), _sourceY = 0 };
+
+            MovingEntities.Add(thug);
 
             for (int i = 0; i < 200; i++)
             {
@@ -30,8 +34,12 @@ namespace GTA
 
                 var citizen = new Citizen() { Pos = new Vector2D(rand.Next(0, 1600), rand.Next(0, 800)), _sourceY = citizenNr * 16, enemy = thug, Flee = flee, Wander = wander, Seek = seek };
                 //var citizen = new Citizen() { Pos = new Vector2D(rand.Next(0, 1600), rand.Next(0, 800)), _sourceY = citizenNr * 16, enemy = thug, Flee = false, Wander = false, Seek = true };
-                _entities.Add(citizen);
+                MovingEntities.Add(citizen);
             }
+
+            ObstacleEntities.Add(new Building {Pos = new Vector2D(0,0)});
+            ObstacleEntities.Add(new Road {Pos = new Vector2D(64,0)});
+            ObstacleEntities.Add(new Pavement {Pos = new Vector2D(0,64)});
         }
 
         public static World GetInstance()
@@ -42,21 +50,21 @@ namespace GTA
         public void Load(GraphicsDevice graphicsDevice, ContentManager content)
         {
             thug.Load(graphicsDevice, content);
-            foreach (var entity in _entities)
+            foreach (var entity in MovingEntities)
                 entity.Load(graphicsDevice, content);
         }
 
         public void Update(float timeElapsed)
         {
             //thug.Update(timeElapsed);
-            foreach (var entity in _entities)
+            foreach (var entity in MovingEntities)
                 entity.Update(timeElapsed);
         }
 
         public void Render(SpriteBatch spriteBatch)
         {
             //thug.Render(spriteBatch);
-            foreach (var entity in _entities)
+            foreach (var entity in MovingEntities)
                 entity.Render(spriteBatch);
         }
 
@@ -98,8 +106,33 @@ namespace GTA
             //  radius of the single entity parameter
 
             //iterate through all entities checking for range
-            foreach (MovingEntity curEntity in _entities)
+            foreach (MovingEntity curEntity in MovingEntities)
             {
+                //first clear any current tag
+                curEntity.IsTagged = false;
+
+                Vector2D to = curEntity.Pos - pEntity.Pos;
+
+                //the bounding radius of the other is taken into account by adding it 
+                //to the range
+                double range = radius + curEntity.Bradius;
+
+                //if entity within range, tag for further consideration. (working in
+                //distance-squared space to avoid sqrts)
+                if ((curEntity != pEntity) && (to.LengthSq() < range * range))
+                {
+                    curEntity.IsTagged = true;
+                }
+
+            }//next entity
+        }
+
+        internal void TagObstaclesWithinViewRange(MovingEntity _entity, double m_dDBoxLength)
+        {
+            //iterate through all entities checking for range
+            foreach (BaseGameEntity curEntity in ObstacleEntities)
+            {
+
                 //first clear any current tag
                 curEntity.IsTagged = false;
 

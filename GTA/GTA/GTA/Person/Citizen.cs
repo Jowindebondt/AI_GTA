@@ -19,7 +19,7 @@ namespace GTA
         public Citizen()
         {
             SteeringBehaviors = new SteeringBehaviors(this, enemy);
-            _personTexture = new AnimatedTexture(new Vector2D(0,0), 0, 1, 0);
+            _personTexture = new AnimatedTexture(new Vector2D(16,16), 0, 1, 0);
             Mass = 0.1f;
             double rotation = VectorHelper.RandFloat()*(Math.PI*2);
             Heading = new Vector2D((float)Math.Sin(rotation), (float)-Math.Cos(rotation));

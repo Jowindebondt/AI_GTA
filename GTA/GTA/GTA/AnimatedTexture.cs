@@ -66,7 +66,7 @@ namespace GTA
 
             Rectangle sourcerect = new Rectangle(FrameWidth * Frame, sourceY, FrameWidth, myTexture.Height / 7);
             Batch.Draw(myTexture, screenpos.toVector2(), sourcerect, Color.White,
-                Rotation, Origin.toVector2(), Scale, SpriteEffects.None, Depth);
+                Rotation, new Vector2((float)Origin.X / 2,(float)Origin.Y /2), Scale, SpriteEffects.None, Depth);
         }
 
         public bool IsPaused

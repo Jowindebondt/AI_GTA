@@ -18,6 +18,8 @@ namespace GTA
         public float m_dWanderDistance;
         public double m_dViewDistance;
         public double m_dWeightSeparation;
+        public double m_dDBoxLength;
+        public double MinDetectionBoxLength;
 
         private MovingEntity _entity;
 
@@ -105,6 +107,154 @@ namespace GTA
             return new Vector2D();
         }
 
+        public Vector2D ObstacleAvoidance(List<BaseGameEntity> obstacles)
+        {
+            //the detection box length is proportional to the agent's velocity
+            m_dDBoxLength = MinDetectionBoxLength +
+                            (_entity.Speed / _entity.MaxSpeed) * MinDetectionBoxLength;
+
+            //tag all obstacles within range of the box for processing
+            World.GetInstance().TagObstaclesWithinViewRange(_entity, m_dDBoxLength);
+
+            //this will keep track of the closest intersecting obstacle (CIB)
+            BaseGameEntity ClosestIntersectingObstacle = null;
+
+            //this will be used to track the distance to the CIB
+            double DistToClosestIP = Double.MaxValue;
+
+            //this will record the transformed local coordinates of the CIB
+            Vector2D ClosestObstacleLocalPos = new Vector2D();
+
+            foreach (BaseGameEntity curOb in obstacles)
+            {
+                //if the obstacle has been tagged within range proceed
+                if (curOb.IsTagged)
+                {
+                    //calculate this obstacle's position in local space
+                    Vector2D LocalPos = PointToLocalSpace(curOb.Pos,
+                                                           _entity.Heading,
+                                                           _entity.Side,
+                                                           _entity.Pos);
+
+                    //if the local position has a negative x value then it must lay
+                    //behind the agent. (in which case it can be ignored)
+                    if (LocalPos.X >= 0)
+                    {
+                        //if the distance from the x axis to the object's position is less
+                        //than its radius + half the width of the detection box then there
+                        //is a potential intersection.
+                        double ExpandedRadius = curOb.Bradius + _entity.Bradius;
+
+                        if (Math.Abs(LocalPos.Y) < ExpandedRadius)
+                        {
+                            //now to do a line/circle intersection test. The center of the 
+                            //circle is represented by (cX, cY). The intersection points are 
+                            //given by the formula x = cX +/-sqrt(r^2-cY^2) for y=0. 
+                            //We only need to look at the smallest positive value of x because
+                            //that will be the closest point of intersection.
+                            double cX = LocalPos.X;
+                            double cY = LocalPos.Y;
+
+                            //we only need to calculate the sqrt part of the above equation once
+                            double SqrtPart = Math.Sqrt(ExpandedRadius * ExpandedRadius - cY * cY);
+
+                            double ip = cX - SqrtPart;
+
+                            if (ip <= 0.0)
+                            {
+                                ip = cX + SqrtPart;
+                            }
+
+                            //test to see if this is the closest so far. If it is keep a
+                            //record of the obstacle and its local coordinates
+                            if (ip < DistToClosestIP)
+                            {
+                                DistToClosestIP = ip;
+
+                                ClosestIntersectingObstacle = curOb;
+
+                                ClosestObstacleLocalPos = LocalPos;
+                            }
+                        }
+                    }
+                }
+            }
+
+            //if we have found an intersecting obstacle, calculate a steering 
+            //force away from it
+            Vector2D SteeringForce = new Vector2D(0.0, 0.0);
+
+            if (ClosestIntersectingObstacle != null)
+            {
+                //the closer the agent is to an object, the stronger the 
+                //steering force should be
+                double multiplier = 1.0 + (m_dDBoxLength - ClosestObstacleLocalPos.X) / m_dDBoxLength;
+
+                //calculate the lateral force                                
+
+                // Check to see if we could use a hint on choosing a more 
+                // efficient direction to turn when avoiding the obstacle
+                Vector2D targetLoc = null;
+
+                if (On(behavior_type.follow_path) && (!m_pPath.Finished()))
+                {
+                    targetLoc = m_pPath.CurrentWaypoint();
+                }
+                else if ((On(behavior_type.seek) || On(behavior_type.arrive)) && (!Vector2D.IsNull(GameWorld.Instance.TargetPos)))
+                {
+                    targetLoc = GameWorld.Instance.TargetPos;
+                }
+                else if ((On(behavior_type.pursuit) || On(behavior_type.offset_pursuit)) && (m_pTargetAgent1 != null))
+                {
+                    targetLoc = m_pTargetAgent1.Pos;
+                }
+
+                if (!Vector2D.IsNull(targetLoc))
+                {
+                    // Get normalised direction to obstacle from current location
+                    Vector2D dirToObs = ClosestIntersectingObstacle.Pos - m_parentMovingEntity.Pos;
+                    dirToObs.Normalize();
+
+                    // Calculate the two "apex choices" on the obstacles sphere
+                    Vector2D interceptRightHand = Vector2D.ProjectedPerp(ClosestIntersectingObstacle.Pos,
+                                                                                    dirToObs,
+                                                                                    ClosestIntersectingObstacle.BRadius,
+                                                                                    false);
+
+                    Vector2D interceptLeftHand = Vector2D.ProjectedPerp(ClosestIntersectingObstacle.Pos,
+                                                                                    dirToObs,
+                                                                                    ClosestIntersectingObstacle.BRadius,
+                                                                                    true);
+
+                    // Calculate and compare the distances to determine the preferred "side" of the sphere.
+                    double distRightHand = interceptRightHand.DistanceSq(targetLoc);
+                    double distLeftHand = interceptLeftHand.DistanceSq(targetLoc);
+
+                    if (distLeftHand < distRightHand)
+                    {
+                        multiplier = multiplier * -1; // We will travel on the left hand side of the sphere.
+                    }
+                }
+
+                SteeringForce.Y = ClosestIntersectingObstacle.BRadius * multiplier;
+
+                //apply a braking force proportional to the obstacles distance from
+                //the vehicle. 
+                double BrakingWeight = 0.2;
+
+                SteeringForce.X = (ClosestIntersectingObstacle.BRadius -
+                                   ClosestObstacleLocalPos.X) *
+                                   BrakingWeight;
+            }
+
+            //finally, convert the steering vector from local to world space
+            Vector2D vecReturn = Utils.VectorToWorldSpace(SteeringForce,
+                                      m_parentMovingEntity.Heading(),
+                                      m_parentMovingEntity.Side());
+
+            return vecReturn;
+        }
+
         private Vector2D Separation(List<MovingEntity> neighbors)
         {
             Vector2D SteeringForce = new Vector2D(0.0, 0.0);
@@ -134,7 +284,7 @@ namespace GTA
             //tag neighbors if any of the following 3 group behaviors are switched on
             World.GetInstance().TagAgentsWithinViewRange(_entity, m_dViewDistance);
 
-            m_vSteeringForce += Separation(World.GetInstance()._entities) * m_dWeightSeparation;
+            m_vSteeringForce += Separation(World.GetInstance().MovingEntities) * m_dWeightSeparation;
 
             if (useWander)
             {
@@ -237,6 +387,28 @@ namespace GTA
 
             //and translate
             matTransform.Translate(AgentPosition.X, AgentPosition.Y);
+
+            //now transform the vertices
+            matTransform.TransformVector2D(TransPoint);
+
+            return TransPoint;
+        }
+
+        private Vector2D PointToLocalSpace(Vector2D vector2D, Vector2D vector2D_2, Vector2D vector2D_3, Vector2D vector2D_4)
+        {
+            //make a copy of the point
+            Vector2D TransPoint = new Vector2D(point.X, point.Y);
+
+            //create a transformation matrix
+            C2DMatrix matTransform = new C2DMatrix();
+
+            double Tx = -AgentPosition.Dot(AgentHeading);
+            double Ty = -AgentPosition.Dot(AgentSide);
+
+            //create the transformation matrix
+            matTransform._11(AgentHeading.X); matTransform._12(AgentSide.X);
+            matTransform._21(AgentHeading.Y); matTransform._22(AgentSide.Y);
+            matTransform._31(Tx); matTransform._32(Ty);
 
             //now transform the vertices
             matTransform.TransformVector2D(TransPoint);
