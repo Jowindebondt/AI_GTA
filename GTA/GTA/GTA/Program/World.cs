@@ -37,9 +37,23 @@ namespace GTA
                 MovingEntities.Add(citizen);
             }
 
-            ObstacleEntities.Add(new Building {Pos = new Vector2D(0,0)});
-            ObstacleEntities.Add(new Road {Pos = new Vector2D(64,0)});
-            ObstacleEntities.Add(new Pavement {Pos = new Vector2D(0,64)});
+            for (int x = 0; x < 25; x++)
+            {
+                for (int y = 0; y < 14; y++)
+                {
+                    if (y == 0 || y == 14)
+                    {
+                        ObstacleEntities.Add(new Building { Pos = new Vector2D(x * 64, y * 64) });
+                    }
+                    else if(x == 0 || x == 14)
+                    {
+                        ObstacleEntities.Add(new Building { Pos = new Vector2D(x * 64, y * 64) }); 
+                    }
+                } 
+            }
+            //ObstacleEntities.Add(new Building {Pos = new Vector2D(0,0)});
+            //ObstacleEntities.Add(new Road {Pos = new Vector2D(64,0)});
+            //ObstacleEntities.Add(new Pavement {Pos = new Vector2D(0,64)});
         }
 
         public static World GetInstance()
@@ -65,6 +79,9 @@ namespace GTA
         {
             //thug.Render(spriteBatch);
             foreach (var entity in MovingEntities)
+                entity.Render(spriteBatch);
+
+            foreach (var entity in ObstacleEntities)
                 entity.Render(spriteBatch);
         }
 
