@@ -50,9 +50,9 @@ namespace GTA
                     {
                         ObstacleEntities.Add(new Building { Pos = new Vector2D(x * 64, y * 64) });  
                     }
-                    else if ((1 < x && x < 23) && (1 < y && y < 12))
+                    else if ((y == 2 || y == 5 || y == 8 || y == 11) && (x == 2 || x == 6 || x == 10 || x == 14 ||x == 18 || x == 22))
                     {
-                        ObstacleEntities.Add(new Road { Pos = new Vector2D(x * 64, y * 64) });
+                        ObstacleEntities.Add(new Building { Pos = new Vector2D(x * 64, y * 64) });
                     }
                     else
                     {
