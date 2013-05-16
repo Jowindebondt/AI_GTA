@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using C3.XNA;
 
 namespace GTA
 {
@@ -14,12 +15,15 @@ namespace GTA
         public readonly List<MovingEntity> MovingEntities;
         public readonly List<ObstacleEntity> ObstacleEntities;
         private MovingEntity thug;
+        private Graph _graph;
+
         private World()
         {
             MovingEntities = new List<MovingEntity>();
             ObstacleEntities = new List<ObstacleEntity>();
             var rand = new Random();
-            
+            _graph = new Graph();
+
             thug = new Thug() { Pos = new Vector2D(800, 450), _sourceY = 0 };
 
             MovingEntities.Add(thug);
@@ -82,6 +86,8 @@ namespace GTA
 
             foreach (var entity in ObstacleEntities)
                 entity.Load(graphicsDevice, content);
+
+            CreateGraph();
         }
 
         public void Update(float timeElapsed)
@@ -97,6 +103,14 @@ namespace GTA
 
             foreach (var entity in MovingEntities)
                 entity.Render(spriteBatch);
+
+            foreach (var node in _graph.getNodes())
+            {
+                foreach (var edge in node._edges)
+                {
+                    Primitives2D.DrawLine(spriteBatch, node._p.X, node._p.Y, edge._nextNode._p.X, edge._nextNode._p.Y, Color.LightGreen);
+                }
+            }
         }
 
         public void UpdateThug(Keys key)
@@ -129,6 +143,22 @@ namespace GTA
 
             thug.Heading = Vector2D.Vec2DNormalize(tempHeading);
 
+        }
+
+        public void CreateGraph()
+        {
+            for (int x = 0; x < 24; x++)
+                for(int y = 0; y < 14; y++)
+                    _graph.addNode(new Node(new Point(x * 64,y * 64)));
+
+            for (int i = 0; i < _graph.getNodes().Count; i++)
+            {
+                Node currentNode = _graph.getNodes()[i];
+                if(i + 24 < _graph.getNodes().Count)
+                    currentNode.addEdge(new Edge(_graph.getNodes()[i + 24]));
+                if (i + 1 < _graph.getNodes().Count)
+                    currentNode.addEdge(new Edge(_graph.getNodes()[i + 1]));
+            }
         }
 
         public void TagAgentsWithinViewRange(BaseGameEntity pEntity, double radius)
