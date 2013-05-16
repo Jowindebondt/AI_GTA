@@ -109,6 +109,15 @@ namespace GTA
                 }
             }
 
+            if (key.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.F1))
+            {
+                if (!KeyDown)
+                {
+                    KeyDown = true;
+                    World.GetInstance()._drawGraph = !World.GetInstance()._drawGraph;
+                }
+            }
+
             if (key.IsKeyDown(Keys.Up))
             {
                 _world.UpdateThug(Keys.Up);
@@ -129,7 +138,7 @@ namespace GTA
                 _world.UpdateThug(Keys.Down);
             }
 
-            if (key.IsKeyUp(Microsoft.Xna.Framework.Input.Keys.F))
+            if (key.IsKeyUp(Microsoft.Xna.Framework.Input.Keys.F) || key.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.F1))
                 KeyDown = false;
         }
 

@@ -10,11 +10,13 @@ namespace GTA
     {
         public List<Edge> _edges { get; set; }
         public Point _p { get; set; }
+        public bool drawn { get; set; }
 
         public Node(Point p)
         {
             _edges = new List<Edge>();
             _p = p;
+            drawn = false;
         }
 
         public void addEdge(Edge edge)

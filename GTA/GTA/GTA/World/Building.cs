@@ -11,6 +11,8 @@ namespace GTA
     class Building : ObstacleEntity
     {
         private Texture2D myTexture;
+        public int FrameWidth { get; set; }
+        public int FrameHeight { get; set; }
         public Building()
         {
             Blocking = Blocking.All;
@@ -24,8 +26,7 @@ namespace GTA
 
         public override void Render(SpriteBatch spriteBatch)
         {
-            int FrameWidth = myTexture.Width / 3;
-            Rectangle sourcerect = new Rectangle(64, 1, FrameWidth, myTexture.Height);
+            Rectangle sourcerect = new Rectangle(64, 1, FrameWidth, FrameHeight);
             spriteBatch.Draw(myTexture, Pos.toVector2(), sourcerect, Color.White,
                        0, new Vector2(0,0), 1, SpriteEffects.None, 1);
         }
@@ -33,6 +34,8 @@ namespace GTA
         public override void Load(GraphicsDevice graphicsDevice, ContentManager content)
         {
             myTexture = content.Load<Texture2D>("map");
+            FrameWidth = myTexture.Width / 3;
+            FrameHeight = myTexture.Height;
         }
     }
 }

@@ -16,6 +16,7 @@ namespace GTA
         public readonly List<ObstacleEntity> ObstacleEntities;
         private MovingEntity thug;
         private Graph _graph;
+        public bool _drawGraph;
 
         private World()
         {
@@ -23,6 +24,7 @@ namespace GTA
             ObstacleEntities = new List<ObstacleEntity>();
             var rand = new Random();
             _graph = new Graph();
+            _drawGraph = false;
 
             thug = new Thug() { Pos = new Vector2D(800, 450), _sourceY = 0 };
 
@@ -104,13 +106,23 @@ namespace GTA
             foreach (var entity in MovingEntities)
                 entity.Render(spriteBatch);
 
+            if (!_drawGraph) return;
+            
             foreach (var node in _graph.getNodes())
             {
+                Primitives2D.DrawCircle(spriteBatch, node._p.X, node._p.Y, 2, 25, Color.LightGreen);
                 foreach (var edge in node._edges)
                 {
-                    Primitives2D.DrawLine(spriteBatch, node._p.X, node._p.Y, edge._nextNode._p.X, edge._nextNode._p.Y, Color.LightGreen);
+                    if (edge._nextNode.drawn) continue;
+
+                    Primitives2D.DrawLine(spriteBatch, node._p.X, node._p.Y, edge._nextNode._p.X,
+                                          edge._nextNode._p.Y, Color.LightGreen);
                 }
+                node.drawn = true;
             }
+
+            foreach (var node in _graph.getNodes())
+                node.drawn = false;
         }
 
         public void UpdateThug(Keys key)
@@ -147,17 +159,43 @@ namespace GTA
 
         public void CreateGraph()
         {
-            for (int x = 0; x < 24; x++)
-                for(int y = 0; y < 14; y++)
-                    _graph.addNode(new Node(new Point(x * 64,y * 64)));
+            int scale = 2;
+            int columns = 26 * scale;
+            int rows = 15 * scale;
+            int multiplier = 64 / scale;
+
+            for (int x = 0; x < columns; x++)
+                for (int y = 0; y < rows; y++)
+                    _graph.addNode(new Node(new Point(x * multiplier, y * multiplier)));
 
             for (int i = 0; i < _graph.getNodes().Count; i++)
             {
                 Node currentNode = _graph.getNodes()[i];
-                if(i + 24 < _graph.getNodes().Count)
-                    currentNode.addEdge(new Edge(_graph.getNodes()[i + 24]));
-                if (i + 1 < _graph.getNodes().Count)
-                    currentNode.addEdge(new Edge(_graph.getNodes()[i + 1]));
+                Node nextNode;
+                if (i + rows < _graph.getNodes().Count)
+                {
+                    nextNode = _graph.getNodes()[i + rows];
+                    currentNode.addEdge(new Edge(nextNode));
+                    nextNode.addEdge(new Edge(currentNode));
+                }
+                if (i + rows + 1 < _graph.getNodes().Count && (i + 1)%rows != 0)
+                {
+                    nextNode = _graph.getNodes()[i + rows + 1];
+                    currentNode.addEdge(new Edge(nextNode));
+                    nextNode.addEdge(new Edge(currentNode)); 
+                }
+                if (i + rows - 1 < _graph.getNodes().Count && (i)%rows != 0)
+                {
+                    nextNode = _graph.getNodes()[i + rows - 1];
+                    currentNode.addEdge(new Edge(nextNode));
+                    nextNode.addEdge(new Edge(currentNode)); 
+                }
+                if (i + 1 < _graph.getNodes().Count && (i + 1)%rows != 0)
+                {
+                    nextNode = _graph.getNodes()[i + 1];
+                    currentNode.addEdge(new Edge(nextNode));
+                    nextNode.addEdge(new Edge(currentNode)); 
+                }
             }
         }
 
