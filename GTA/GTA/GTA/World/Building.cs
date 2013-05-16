@@ -14,11 +14,12 @@ namespace GTA
         public Building()
         {
             Blocking = Blocking.All;
+            Bradius = 64;
         }
 
         public override void Update(float timeElapsed)
         {
-            throw new NotImplementedException();
+            /*throw new NotImplementedException();*/
         }
 
         public override void Render(SpriteBatch spriteBatch)

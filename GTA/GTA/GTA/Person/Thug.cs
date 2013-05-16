@@ -12,6 +12,7 @@ namespace GTA
         {
             _personTexture = new AnimatedTexture(new Vector2D(16,16), 0, 1, 0);
             Heading = new Vector2D(0,0);
+            Bradius = 16;
         }
 
         public override void Update(float timeElapsed)

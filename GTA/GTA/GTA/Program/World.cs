@@ -70,14 +70,15 @@ namespace GTA
 
         public void Update(float timeElapsed)
         {
-            //thug.Update(timeElapsed);
             foreach (var entity in MovingEntities)
+                entity.Update(timeElapsed);
+
+            foreach (var entity in ObstacleEntities)
                 entity.Update(timeElapsed);
         }
 
         public void Render(SpriteBatch spriteBatch)
         {
-            //thug.Render(spriteBatch);
             foreach (var entity in MovingEntities)
                 entity.Render(spriteBatch);
 
@@ -144,7 +145,7 @@ namespace GTA
             }//next entity
         }
 
-        internal void TagObstaclesWithinViewRange(MovingEntity _entity, double m_dDBoxLength)
+        internal void TagObstaclesWithinViewRange(MovingEntity pEntity, double radius)
         {
             //iterate through all entities checking for range
             foreach (BaseGameEntity curEntity in ObstacleEntities)

@@ -28,6 +28,7 @@ namespace GTA
             Velocity = new Vector2D(0, 0);
             Side = Heading.Perp();
             Target = new Vector2D(0,0);
+            Bradius = 16;
         }
 
         public override void Update(float timeElapsed)
