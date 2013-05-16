@@ -114,6 +114,9 @@
     <Compile Include="Blocking.cs" />
     <Compile Include="Common\C2DMatrix.cs" />
     <Compile Include="Common\Vector2D.cs" />
+    <Compile Include="Graph\Edge.cs" />
+    <Compile Include="Graph\Graph.cs" />
+    <Compile Include="Graph\Node.cs" />
     <Compile Include="ObstacleEntity.cs" />
     <Compile Include="Person\Citizen.cs" />
     <Compile Include="MovingEntity.cs" />

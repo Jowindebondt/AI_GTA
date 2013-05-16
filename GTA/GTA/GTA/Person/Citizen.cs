@@ -15,6 +15,7 @@ namespace GTA
         public bool Flee;
         public bool Wander;
         public bool Seek;
+        public bool Explore;
 
         public Citizen()
         {
@@ -49,6 +50,11 @@ namespace GTA
                 SteeringBehaviors.SeekOn();
             else
                 SteeringBehaviors.SeekOff();
+
+            if (Explore)
+                SteeringBehaviors.ExploreOn();
+            else
+                SteeringBehaviors.ExploreOff();
 
             SteeringBehaviors.SetTarget(enemy.Pos);
 

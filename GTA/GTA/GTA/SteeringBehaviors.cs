@@ -23,12 +23,13 @@ namespace GTA
         public double m_dWeightObstacleAvoidance;
 
         private MovingEntity _entity;
-        private List<Vector2> ExploreTargets; 
+        private Queue<Vector2D> ExploreTargets; 
 
         private bool useWander;
         private bool useFlee;
         private bool useSeek;
         private bool useArrive;
+        private bool useExplore;
 
         private const double PANICDISTANCESQ = 100*100;
 
@@ -53,16 +54,17 @@ namespace GTA
             m_vWanderTarget = new Vector2D(_mDWanderRadius * Math.Cos(rotation), _mDWanderRadius * Math.Sin(rotation));
             m_pTargetAgent1 = enemy;
 
-            ExploreTargets.Add(new Vector2(100,100)); //Left-Top
-            ExploreTargets.Add(new Vector2(100, 500));//Left-Bottom
-            ExploreTargets.Add(new Vector2(800, 500));//Mid-Bottom
-            ExploreTargets.Add(new Vector2(800, 100));//Mid-Top
-            ExploreTargets.Add(new Vector2(1700, 100)); //Right-Top
-            ExploreTargets.Add(new Vector2(1700, 500)); //Right-Bottom
-            ExploreTargets.Add(new Vector2(800, 450)); //Mid-Mid
-            ExploreTargets.Add(new Vector2(100, 450)); // Mid-Left
-            ExploreTargets.Add(new Vector2(1700, 450)); // Mid-Right
+            ExploreTargets = new Queue<Vector2D>();
 
+            ExploreTargets.Enqueue(new Vector2D(100,100)); //Left-Top
+            ExploreTargets.Enqueue(new Vector2D(100, 500));//Left-Bottom
+            ExploreTargets.Enqueue(new Vector2D(800, 500));//Mid-Bottom
+            ExploreTargets.Enqueue(new Vector2D(800, 100));//Mid-Top
+            ExploreTargets.Enqueue(new Vector2D(1500, 100)); //Right-Top
+            ExploreTargets.Enqueue(new Vector2D(1500, 500)); //Right-Bottom
+            ExploreTargets.Enqueue(new Vector2D(800, 450)); //Mid-Mid
+            ExploreTargets.Enqueue(new Vector2D(100, 450)); // Mid-Left
+            ExploreTargets.Enqueue(new Vector2D(1500, 450)); // Mid-Right
         }
 
         private Vector2D Flee(Vector2D target)
@@ -118,9 +120,17 @@ namespace GTA
             return _entity.Target - _entity.Pos;
         }
 
-        private Vector2D Explore(Vector2D target)
+        private Vector2D Explore()
         {
-            return new Vector2D();
+            Vector2D exploreTarget = ExploreTargets.Peek();
+
+            double toTarget = (exploreTarget - _entity.Pos).Length();
+
+            if (toTarget < 10d)
+                ExploreTargets.Enqueue(ExploreTargets.Dequeue());
+
+            Vector2D desiredVelocity = Vector2D.Vec2DNormalize(exploreTarget - _entity.Pos) * _entity.MaxSpeed;
+            return desiredVelocity - _entity.Velocity;
         }
 
         public Vector2D ObstacleAvoidance(List<ObstacleEntity> obstacles)
@@ -166,8 +176,8 @@ namespace GTA
                             //given by the formula x = cX +/-sqrt(r^2-cY^2) for y=0. 
                             //We only need to look at the smallest positive value of x because
                             //that will be the closest point of intersection.
-                            double cX = LocalPos.X + 32;
-                            double cY = LocalPos.Y + 32;
+                            double cX = LocalPos.X;
+                            double cY = LocalPos.Y;
 
                             //we only need to calculate the sqrt part of the above equation once
                             double SqrtPart = Math.Sqrt(ExpandedRadius * ExpandedRadius - cY * cY);
@@ -303,19 +313,16 @@ namespace GTA
             m_vSteeringForce += Separation(World.GetInstance().MovingEntities) * m_dWeightSeparation;
 
             if (useWander)
-            {
                 m_vSteeringForce += Wander();
-            }
 
             if (useFlee)
-            {
                 m_vSteeringForce += Flee(target);
-            }
             
             if (useSeek)
-            {
                 m_vSteeringForce += Seek(target);
-            }
+
+            if (useExplore)
+                m_vSteeringForce += Explore();
 
             return m_vSteeringForce;
         }
@@ -357,7 +364,7 @@ namespace GTA
 
         public void ExploreOn()
         {
-            
+            useExplore = true;
         }
 
         public void WanderOn()
@@ -382,7 +389,7 @@ namespace GTA
 
         public void ExploreOff()
         {
-
+            useExplore = false;
         }
 
         public void WanderOff()

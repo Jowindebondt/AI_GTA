@@ -14,7 +14,7 @@ namespace GTA
         public Building()
         {
             Blocking = Blocking.All;
-            Bradius = 64;
+            Bradius = 20;
         }
 
         public override void Update(float timeElapsed)
