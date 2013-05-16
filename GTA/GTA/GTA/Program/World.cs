@@ -41,13 +41,21 @@ namespace GTA
             {
                 for (int y = 0; y < 14; y++)
                 {
-                    if (y == 0 || y == 14)
+                    if (y == 0 || y == 13)
                     {
                         ObstacleEntities.Add(new Building { Pos = new Vector2D(x * 64, y * 64) });
                     }
-                    else if(x == 0 || x == 14)
+                    else if(x == 0 || x == 24)
                     {
-                        ObstacleEntities.Add(new Building { Pos = new Vector2D(x * 64, y * 64) }); 
+                        ObstacleEntities.Add(new Building { Pos = new Vector2D(x * 64, y * 64) });  
+                    }
+                    else if ((1 < x && x < 23) && (1 < y && y < 12))
+                    {
+                        ObstacleEntities.Add(new Road { Pos = new Vector2D(x * 64, y * 64) });
+                    }
+                    else
+                    {
+                        ObstacleEntities.Add(new Pavement { Pos = new Vector2D(x * 64, y * 64) });   
                     }
                 } 
             }
@@ -63,8 +71,10 @@ namespace GTA
 
         public void Load(GraphicsDevice graphicsDevice, ContentManager content)
         {
-            thug.Load(graphicsDevice, content);
             foreach (var entity in MovingEntities)
+                entity.Load(graphicsDevice, content);
+
+            foreach (var entity in ObstacleEntities)
                 entity.Load(graphicsDevice, content);
         }
 
@@ -72,17 +82,14 @@ namespace GTA
         {
             foreach (var entity in MovingEntities)
                 entity.Update(timeElapsed);
-
-            foreach (var entity in ObstacleEntities)
-                entity.Update(timeElapsed);
         }
 
         public void Render(SpriteBatch spriteBatch)
         {
-            foreach (var entity in MovingEntities)
+            foreach (var entity in ObstacleEntities)
                 entity.Render(spriteBatch);
 
-            foreach (var entity in ObstacleEntities)
+            foreach (var entity in MovingEntities)
                 entity.Render(spriteBatch);
         }
 

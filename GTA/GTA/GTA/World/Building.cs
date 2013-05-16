@@ -25,10 +25,9 @@ namespace GTA
         public override void Render(SpriteBatch spriteBatch)
         {
             int FrameWidth = myTexture.Width / 3;
-
-            Rectangle sourcerect = new Rectangle(FrameWidth * 64, 1, FrameWidth, myTexture.Height);
+            Rectangle sourcerect = new Rectangle(64, 1, FrameWidth, myTexture.Height);
             spriteBatch.Draw(myTexture, Pos.toVector2(), sourcerect, Color.White,
-                       1, new Vector2(0,0), 1, SpriteEffects.None, 1);
+                       0, new Vector2(0,0), 1, SpriteEffects.None, 1);
         }
 
         public override void Load(GraphicsDevice graphicsDevice, ContentManager content)
