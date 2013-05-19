@@ -204,29 +204,35 @@ namespace GTA
                 {
                     if (obstacleEntity.GetType() != typeof(Building)) continue;
                     
-                    if (node._p.X >= obstacleEntity.Pos.X && node._p.X <= obstacleEntity.Pos.X + 64 &&
-                        node._p.Y >= obstacleEntity.Pos.Y && node._p.Y <= obstacleEntity.Pos.Y + 64)
+                    if ((node._p.X > obstacleEntity.Pos.X && node._p.X < obstacleEntity.Pos.X + 64) && 
+                        (node._p.Y > obstacleEntity.Pos.Y && node._p.Y < obstacleEntity.Pos.Y + 64))
                     {
-                        int totalEdges = node._edges.Count;
-                        int count = 0;
-                        while (true)
+                        //Node is in a building
+                        foreach (var edge in node._edges)
                         {
-                            if (count == totalEdges) break;
-
-                            Edge currentEdge = node._edges[count];
-
-                            if (currentEdge._nextNode._p.X >= obstacleEntity.Pos.X &&
-                                currentEdge._nextNode._p.X <= obstacleEntity.Pos.X + 64 &&
-                                currentEdge._nextNode._p.Y >= obstacleEntity.Pos.Y &&
-                                currentEdge._nextNode._p.Y <= obstacleEntity.Pos.Y + 64)
+                            edge._nextNode._edges.Remove(edge._nextNode._edges.Find(e => e._nextNode == node));
+                        }
+                        node._edges.Clear();
+                    }
+                    else if ((node._p.X == obstacleEntity.Pos.X || node._p.X == obstacleEntity.Pos.X + 64) &&
+                        (node._p.Y > obstacleEntity.Pos.Y && node._p.Y < obstacleEntity.Pos.Y + 64))
+                    {
+                        List<Edge> removeEdges = new List<Edge>();
+                        //Node is at the left or the right side of a building
+                        foreach (var edge in node._edges)
+                        {
+                            if ((edge._nextNode._p.X > obstacleEntity.Pos.X && edge._nextNode._p.X < obstacleEntity.Pos.X + 64) &&
+                                (edge._nextNode._p.Y == obstacleEntity.Pos.Y || edge._nextNode._p.Y == obstacleEntity.Pos.Y + 64))
                             {
-                                currentEdge._nextNode._edges.Remove(
-                                    currentEdge._nextNode._edges.Find(e => e._nextNode == node));
-                                node._edges.Remove(currentEdge);
-                                totalEdges--;
-                                continue;
+                                //Next node is at the top or the bottom side of a building
+                                removeEdges.Add(edge);
+                                edge._nextNode._edges.Remove(edge._nextNode._edges.Find(e => e._nextNode == node));
                             }
-                            count++;
+                        }
+
+                        foreach (var removeEdge in removeEdges)
+                        {
+                            node._edges.Remove(removeEdge);
                         }
                     }
                 }
