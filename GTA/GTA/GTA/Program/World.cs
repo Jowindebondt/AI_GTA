@@ -30,16 +30,29 @@ namespace GTA
 
             MovingEntities.Add(thug);
 
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 20; i++)
             {
-                bool seek = rand.Next(0, 2) == 1;
-                bool flee = !seek;
-                bool wander = !seek;
+                int next = rand.Next(0, 3);
+                
+                var seek = false;
+                var explore = false;
+                var wander = false;
+                var flee = false;
+
+                if (next == 1)
+                    seek = true;
+                else if (next == 2)
+                    explore = true;
+                else
+                {
+                    wander = true;
+                    flee = true;
+                }
 
                 int citizenNr = rand.Next(1, 7);
 
                 //---Random---//
-                //var citizen = new Citizen() { Pos = new Vector2D(rand.Next(100, 1500), rand.Next(100, 700)), _sourceY = citizenNr * 16, enemy = thug, Flee = flee, Wander = wander, Seek = seek, Explore = false };
+                var citizen = new Citizen() { Pos = new Vector2D(rand.Next(100, 1500), rand.Next(100, 700)), _sourceY = citizenNr * 16, enemy = thug, Flee = flee, Wander = wander, Seek = seek, Explore = explore };
                 
                 //---Seek---//
                 //var citizen = new Citizen() { Pos = new Vector2D(rand.Next(100, 1500), rand.Next(100, 700)), _sourceY = citizenNr * 16, enemy = thug, Flee = false, Wander = false, Seek = true, Explore = false };
@@ -48,7 +61,7 @@ namespace GTA
                 //var citizen = new Citizen() { Pos = new Vector2D(rand.Next(100, 1500), rand.Next(100, 700)), _sourceY = citizenNr * 16, enemy = thug, Flee = true, Wander = true, Seek = false, Explore = false };
 
                 //---Explore---//
-                var citizen = new Citizen() { Pos = new Vector2D(rand.Next(100, 1500), rand.Next(100, 700)), _sourceY = citizenNr * 16, enemy = thug, Flee = false, Wander = false, Seek = false, Explore = true };
+                //var citizen = new Citizen() { Pos = new Vector2D(rand.Next(100, 1500), rand.Next(100, 700)), _sourceY = citizenNr * 16, enemy = thug, Flee = false, Wander = false, Seek = false, Explore = true };
                 MovingEntities.Add(citizen);
             }
 
