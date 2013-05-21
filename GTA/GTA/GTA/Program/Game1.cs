@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Windows.Forms;
+using GTA.Common;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -31,7 +32,7 @@ namespace GTA
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
-            IsMouseVisible = false;
+            IsMouseVisible = true;
             Window.AllowUserResizing = true;
             _graphics.PreparingDeviceSettings += PreparingDeviceSettings;
 
@@ -153,11 +154,28 @@ namespace GTA
             var key = Keyboard.GetState();
             KeyPresses(key);
 
+            var mouse = Mouse.GetState();
+            MousePresses(mouse);
+
             var elapsed = (float) gameTime.ElapsedGameTime.TotalSeconds;
             // TODO: Add your update logic here
             _world.Update(elapsed);
 
             base.Update(gameTime);
+        }
+
+        private void MousePresses(MouseState mouse)
+        {
+            Random rand = new Random();
+            if (mouse.LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed)
+            {
+                Node startnode = _world._graph.GetNodeFromPoint(((int)(_world.MovingEntities[0].Pos.X/32)* 32),
+                                                                (int)(_world.MovingEntities[0].Pos.Y/32)* 32);
+
+                Node endnode = _world._graph.GetNodeFromPoint((int)(mouse.X / 32)*32,
+                                                                (int)(mouse.Y / 32)*32); // / 32 * 32!!!
+                _world.MovingEntities[1].SteeringBehaviors.CreateListAStar(startnode, endnode);
+            }
         }
 
         /// <summary>

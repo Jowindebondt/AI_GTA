@@ -23,5 +23,15 @@ namespace GTA
         {
             return _nodes;
         }
+
+        public Node GetNodeFromPoint(int _x, int _y)
+        {
+            foreach (var node in _nodes)
+            {
+                if (node._p.X == _x && node._p.Y == _y)
+                    return node;
+            }
+            return null;
+        }
     }
 }

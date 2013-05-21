@@ -24,13 +24,15 @@ namespace GTA
         public double m_dWeightObstacleAvoidance;
 
         private MovingEntity _entity;
-        private Queue<Vector2D> ExploreTargets; 
+        private Queue<Vector2D> ExploreTargets;
+        private List<Node> AStarTargets;
 
         private bool useWander;
         private bool useFlee;
         private bool useSeek;
         private bool useArrive;
         private bool useExplore;
+        private bool useAStar;
 
         private const double PANICDISTANCESQ = 100*100;
 
@@ -55,6 +57,7 @@ namespace GTA
             m_vWanderTarget = new Vector2D(_mDWanderRadius * Math.Cos(rotation), _mDWanderRadius * Math.Sin(rotation));
             m_pTargetAgent1 = enemy;
 
+            AStarTargets = new List<Node>();
             ExploreTargets = new Queue<Vector2D>();
 
             ExploreTargets.Enqueue(new Vector2D(100,100)); //Left-Top
@@ -68,7 +71,7 @@ namespace GTA
             ExploreTargets.Enqueue(new Vector2D(1500, 450)); // Mid-Right
         }
 
-        private List<Node> AStar(Node start, Node target)
+        public void CreateListAStar(Node start, Node target)
         {
             List<Node> closedSet = new List<Node>(); // Set of nodes that are already evaluated.
             Queue<Node> openSet = new Queue<Node>();     //Set of tentative nodes to be evaluated, initially containing the start node
@@ -98,7 +101,7 @@ namespace GTA
                 {
                     ReconstructPath(current, path);
 
-                    return path;
+                    AStarTargets = path;
                 }
 
                 foreach (var edge in current._edges)
@@ -129,7 +132,7 @@ namespace GTA
             }
             ResetNodes(closedSet);
 
-            return path;
+            AStarTargets = path;
         }
 
         private void ReconstructPath(Node current, List<Node> output)
@@ -259,6 +262,24 @@ namespace GTA
 
             Vector2D desiredVelocity = Vector2D.Vec2DNormalize(exploreTarget - _entity.Pos) * _entity.MaxSpeed;
             return desiredVelocity - _entity.Velocity;
+        }
+
+        private Vector2D AStar()
+        {
+            if (AStarTargets.Count == 0)
+                return Explore();
+            else
+            {
+                Vector2D vector = new Vector2D(AStarTargets[0]._p.X, AStarTargets[0]._p.Y);
+
+                double toTarget = (vector - _entity.Pos).Length();
+
+                if (toTarget < 10d)
+                    AStarTargets.RemoveAt(0);
+
+                Vector2D desiredVelocity = Vector2D.Vec2DNormalize(vector - _entity.Pos)*_entity.MaxSpeed;
+                return desiredVelocity - _entity.Velocity;
+            }
         }
 
         public Vector2D ObstacleAvoidance(List<ObstacleEntity> obstacles)
@@ -452,6 +473,9 @@ namespace GTA
             if (useExplore)
                 m_vSteeringForce += Explore();
 
+            if (useAStar)
+                m_vSteeringForce += AStar();
+
             return m_vSteeringForce;
         }
 
@@ -495,6 +519,11 @@ namespace GTA
             useExplore = true;
         }
 
+        public void AStarOn()
+        {
+            useAStar = true;
+        }
+
         public void WanderOn()
         {
             useWander = true;
@@ -518,6 +547,11 @@ namespace GTA
         public void ExploreOff()
         {
             useExplore = false;
+        }
+
+        public void AStarOff()
+        {
+            useAStar = false;
         }
 
         public void WanderOff()
