@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using GTA.Common;
 using Microsoft.Xna.Framework;
 
@@ -65,6 +66,133 @@ namespace GTA
             ExploreTargets.Enqueue(new Vector2D(800, 450)); //Mid-Mid
             ExploreTargets.Enqueue(new Vector2D(100, 450)); // Mid-Left
             ExploreTargets.Enqueue(new Vector2D(1500, 450)); // Mid-Right
+        }
+
+        private List<Node> AStar(Node start, Node target)
+        {
+            List<Node> closedSet = new List<Node>(); // Set of nodes that are already evaluated.
+            Queue<Node> openSet = new Queue<Node>();     //Set of tentative nodes to be evaluated, initially containing the start node
+            List<Node> cameFrom = new List<Node>();    //List of navigated nodes
+            int maxDistanceAtcf, distanceATCFLeft;
+            List<Node> path = new List<Node>();
+
+            openSet.Enqueue(start);
+            start.DistanceFromStart = 0;
+            start.DistanceToGoal = (int)heuristicCostEstimated(start, target);
+            start.TotalCost = start.DistanceFromStart + start.DistanceToGoal;
+            maxDistanceAtcf = start.DistanceToGoal;
+            distanceATCFLeft = start.DistanceToGoal;
+
+            int bestScore = 0;
+
+            while (openSet.Count != 0)
+            {
+                var current = openSet.Dequeue();
+                closedSet.Add(current);
+
+                var _tentativeIsBetter = false;
+                if (current.DistanceToGoal < distanceATCFLeft)
+                    distanceATCFLeft = current.DistanceToGoal;
+
+                if (current == target)
+                {
+                    ReconstructPath(current, path);
+
+                    return path;
+                }
+
+                foreach (var edge in current._edges)
+                {
+                    if (closedSet.Contains(edge._nextNode)) continue;
+                    
+                    var tentativeGScore = current.DistanceFromStart + DistBetween(current, edge._nextNode);
+                    
+                    if (!openSet.Contains(edge._nextNode) || tentativeGScore < edge._nextNode.DistanceFromStart)
+                    {
+                        edge._nextNode.DistanceToGoal = (int)heuristicCostEstimated(edge._nextNode, target);
+                        
+                        openSet.Enqueue(edge._nextNode);
+
+                        _tentativeIsBetter = true;
+                    }
+                    else
+                    {
+                        _tentativeIsBetter = false;
+                    }
+
+                    if (!_tentativeIsBetter) continue;
+                    
+                    edge._nextNode.Previous = current;
+                    edge._nextNode.DistanceFromStart = (int)tentativeGScore;
+                    edge._nextNode.TotalCost = edge._nextNode.DistanceFromStart + edge._nextNode.DistanceToGoal;
+                }
+            }
+            ResetNodes(closedSet);
+
+            return path;
+        }
+
+        private void ReconstructPath(Node current, List<Node> output)
+        {
+            if (current.Previous == null)
+            {
+                output.Add(current);
+            }
+            else
+            {
+                ReconstructPath(current.Previous, output);
+                output.Add(current);
+            }
+        }
+
+        private void ResetNodes(List<Node> nodes)
+        {
+            foreach (var node in nodes)
+            {
+                node.DistanceToGoal = -1;
+                node.DistanceFromStart = -1;
+            }
+        }
+
+        private double DistBetween(Node current, Node nextNode)
+        {
+            var cost = 0.0;
+            
+            foreach (var edge in current._edges.Where(edge => edge._nextNode == nextNode))
+            {
+                if (edge._nextNode.DistanceToGoal <= 0.0)
+                {
+                    var edgeDistance = 0.0;
+
+                    var currentX = current._p.X;
+                    var currentY = current._p.Y;
+                    var neighborX = nextNode._p.X;
+                    var neighborY = nextNode._p.Y;
+
+                    var differenceX = currentX - neighborX;
+                    var differenceY = currentY - neighborY;
+
+                    edgeDistance = edgeDistance + ((Math.Sqrt(Math.Pow(differenceX, 2) + Math.Pow(differenceY, 2))) / 1000);
+
+                    edge._cost = (int)edgeDistance;
+                }
+            }
+            return cost;
+        }
+
+        private double heuristicCostEstimated(Node current, Node goal)
+        {
+            var currentX = current._p.X;
+            var currentY = current._p.Y;
+            var goalX = goal._p.X;
+            var goalY = goal._p.Y;
+
+            var differenceX = currentX - goalX;
+            var differenceY = currentY - goalY;
+
+            var total = (Math.Sqrt(Math.Pow(differenceX, 2) + Math.Pow(differenceY, 2))) / 1000;
+
+            return total;
         }
 
         private Vector2D Flee(Vector2D target)
