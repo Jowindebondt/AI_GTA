@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System;
+using System.Linq;
 using GTA.Common;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -17,6 +18,7 @@ namespace GTA
         private MovingEntity thug;
         public Graph _graph;
         public bool _drawGraph;
+        public Node endNode { get; set; }
 
         private World()
         {
@@ -132,6 +134,12 @@ namespace GTA
                     Primitives2D.DrawLine(spriteBatch, node._p.X, node._p.Y, edge._nextNode._p.X,
                                           edge._nextNode._p.Y, Color.LightGreen);
                 }
+
+                if (node.Previous != null)
+                    foreach (var edge in node._edges.Where(edge => edge._nextNode == node.Previous))
+                        Primitives2D.DrawLine(spriteBatch, node._p.X, node._p.Y, edge._nextNode._p.X,
+                                              edge._nextNode._p.Y, Color.DarkRed, 3f);
+                
                 node.drawn = true;
             }
 

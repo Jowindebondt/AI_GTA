@@ -169,13 +169,25 @@ namespace GTA
             Random rand = new Random();
             if (mouse.LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed)
             {
-                Node startnode = _world._graph.GetNodeFromPoint(((int)(_world.MovingEntities[0].Pos.X/32)* 32),
-                                                                (int)(_world.MovingEntities[0].Pos.Y/32)* 32);
+                ClearPreviousNode(_world.endNode);
+
+                Node startnode = _world._graph.GetNodeFromPoint(((int)(_world.MovingEntities[1].Pos.X/32)* 32),
+                                                                (int)(_world.MovingEntities[1].Pos.Y/32)* 32);
 
                 Node endnode = _world._graph.GetNodeFromPoint((int)(mouse.X / 32)*32,
                                                                 (int)(mouse.Y / 32)*32); // / 32 * 32!!!
                 _world.MovingEntities[1].SteeringBehaviors.CreateListAStar(startnode, endnode);
+                _world.endNode = endnode;
             }
+        }
+
+        private void ClearPreviousNode(Node currentNode)
+        {
+            if (currentNode == null)
+                return;
+
+            ClearPreviousNode(currentNode.Previous);
+            currentNode.Previous = null;
         }
 
         /// <summary>

@@ -103,15 +103,17 @@ namespace GTA
 
                 foreach (var edge in current._edges)
                 {
-                    if (edge._nextNode.aStarVisited) continue;
-                    
-                    var tentativeGScore = current.DistanceFromStart + DistBetween(current, edge._nextNode);
-                    
-                    if (!openSet.Contains(edge._nextNode) || tentativeGScore < edge._nextNode.DistanceFromStart)
+                    Node nextNode = edge._nextNode;
+                    if (nextNode.aStarVisited) continue;
+
+                    var tentativeGScore = current.DistanceFromStart + DistBetween(current, nextNode);
+
+                    if (!openSet.Contains(nextNode) || tentativeGScore < nextNode.DistanceFromStart)
                     {
-                        edge._nextNode.DistanceToGoal = (int)heuristicCostEstimated(edge._nextNode, target);
-                        
-                        openSet.Enqueue(edge._nextNode);
+                        nextNode.DistanceToGoal = (int)heuristicCostEstimated(nextNode, target);
+
+                        openSet.Enqueue(nextNode);
+                        openSet.OrderBy(node => node.DistanceToGoal);
 
                         _tentativeIsBetter = true;
                     }
@@ -119,11 +121,11 @@ namespace GTA
                         _tentativeIsBetter = false;
 
                     if (!_tentativeIsBetter) continue;
-                    
-                    edge._nextNode.Previous = current;
-                    edge._nextNode.DistanceFromStart = (int)tentativeGScore;
-                    edge._nextNode.TotalCost = edge._nextNode.DistanceFromStart + edge._nextNode.DistanceToGoal;
-                    edge._nextNode.aStarVisited = true;
+
+                    nextNode.Previous = current;
+                    nextNode.DistanceFromStart = (int)tentativeGScore;
+                    nextNode.TotalCost = edge._nextNode.DistanceFromStart + edge._nextNode.DistanceToGoal;
+                    //nextNode.aStarVisited = true;
                     closedSet.Add(edge._nextNode);
                 }
             }
@@ -149,7 +151,6 @@ namespace GTA
                 node.DistanceToGoal = -1;
                 node.aStarVisited = false;
                 node.DistanceFromStart = -1;
-                node.Previous = null;
             }
         }
 
@@ -188,7 +189,7 @@ namespace GTA
             var differenceX = currentX - goalX;
             var differenceY = currentY - goalY;
 
-            var total = (Math.Sqrt(Math.Pow(differenceX, 2) + Math.Pow(differenceY, 2))) / 1000;
+            var total = (Math.Sqrt(Math.Pow(differenceX, 2) + Math.Pow(differenceY, 2)));
 
             return total;
         }
