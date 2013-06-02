@@ -113,8 +113,7 @@ namespace GTA
                         nextNode.DistanceToGoal = (int)heuristicCostEstimated(nextNode, target);
 
                         openSet.Enqueue(nextNode);
-                        openSet.OrderBy(node => node.DistanceToGoal);
-
+                        openSet.ToArray().OrderBy(n => n.DistanceToGoal);
                         _tentativeIsBetter = true;
                     }
                     else
