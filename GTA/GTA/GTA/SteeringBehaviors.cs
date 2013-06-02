@@ -74,7 +74,8 @@ namespace GTA
         public void CreateListAStar(Node start, Node target)
         {
             List<Node> closedSet = new List<Node>(); // Set of nodes that are already evaluated.
-            Queue<Node> openSet = new Queue<Node>();     //Set of tentative nodes to be evaluated, initially containing the start node
+            AStarQueue openSet = new AStarQueue();
+            //Queue<Node> openSet = new Queue<Node>();     //Set of tentative nodes to be evaluated, initially containing the start node
             List<Node> cameFrom = new List<Node>();    //List of navigated nodes
             int maxDistanceAtcf, distanceATCFLeft;
             List<Node> path = new List<Node>();
@@ -88,45 +89,37 @@ namespace GTA
 
             int bestScore = 0;
 
-            while (openSet.Count != 0)
+            while (openSet.GetLength() != 0)
             {
                 var current = openSet.Dequeue();
                 closedSet.Add(current);
                 current.aStarVisited = true;
 
                 bool _tentativeIsBetter;
-                if (current.DistanceToGoal < distanceATCFLeft)
-                    distanceATCFLeft = current.DistanceToGoal;
 
                 if (current == target)
+                {
                     AStarTargets = ReconstructPath(current);
+                    break;
+                }
 
                 foreach (var edge in current._edges)
                 {
                     Node nextNode = edge._nextNode;
-                    if (nextNode.aStarVisited) continue;
-
                     var tentativeGScore = current.DistanceFromStart + DistBetween(current, nextNode);
+
+                    if (nextNode.aStarVisited && nextNode.DistanceFromStart < tentativeGScore) continue;
 
                     if (!openSet.Contains(nextNode) || tentativeGScore < nextNode.DistanceFromStart)
                     {
-                        nextNode.DistanceToGoal = (int)heuristicCostEstimated(nextNode, target);
+                        nextNode.DistanceToGoal = (int) heuristicCostEstimated(nextNode, target);
+                        nextNode.Previous = current;
+                        nextNode.DistanceFromStart = (int) tentativeGScore;
+                        nextNode.TotalCost = edge._nextNode.DistanceFromStart + edge._nextNode.DistanceToGoal;
 
-                        openSet.Enqueue(nextNode);
-                        openSet.OrderBy(node => node.DistanceToGoal);
-
-                        _tentativeIsBetter = true;
+                        if (!openSet.Contains(nextNode))
+                            openSet.Enqueue(nextNode);
                     }
-                    else
-                        _tentativeIsBetter = false;
-
-                    if (!_tentativeIsBetter) continue;
-
-                    nextNode.Previous = current;
-                    nextNode.DistanceFromStart = (int)tentativeGScore;
-                    nextNode.TotalCost = edge._nextNode.DistanceFromStart + edge._nextNode.DistanceToGoal;
-                    //nextNode.aStarVisited = true;
-                    closedSet.Add(edge._nextNode);
                 }
             }
             ResetNodes(closedSet);
@@ -154,28 +147,25 @@ namespace GTA
             }
         }
 
-        private double DistBetween(Node current, Node nextNode)
+        private int DistBetween(Node current, Node nextNode)
         {
-            var cost = 0.0;
-            
-            foreach (var edge in current._edges.Where(edge => edge._nextNode == nextNode))
-            {
-                if (edge._nextNode.DistanceToGoal <= 0.0)
-                {
-                    var currentX = current._p.X;
-                    var currentY = current._p.Y;
-                    var neighborX = nextNode._p.X;
-                    var neighborY = nextNode._p.Y;
+            Edge edge = current._edges.First(e => e._nextNode == nextNode);
 
-                    var differenceX = currentX - neighborX;
-                    var differenceY = currentY - neighborY;
+            if (edge._cost > 0)
+                return edge._cost;
 
-                    var edgeDistance = ((Math.Sqrt(Math.Pow(differenceX, 2) + Math.Pow(differenceY, 2))) / 1000);
+            var currentX = current._p.X;
+            var currentY = current._p.Y;
+            var neighborX = nextNode._p.X;
+            var neighborY = nextNode._p.Y;
 
-                    edge._cost = (int)edgeDistance;
-                    cost = edgeDistance;
-                }
-            }
+            var differenceX = currentX - neighborX;
+            var differenceY = currentY - neighborY;
+
+            var cost = (int)Math.Sqrt(Math.Pow(differenceX, 2) + Math.Pow(differenceY, 2));
+
+            edge._cost = cost;
+
             return cost;
         }
 
