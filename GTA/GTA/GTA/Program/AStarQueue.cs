@@ -22,14 +22,15 @@ namespace GTA
 
             array[length] = node;
             length++;
-            for (int i = length - 2 ; i >= 0; i++)
+            for (int i = length - 2 ; i >= 0; i--)
             {
-                if (array[i].DistanceToGoal > node.DistanceToGoal)
+                if (array[i].TotalCost > node.TotalCost)
                 {
+                    Node ghostNode = array[i + 1];
                     array[i + 1] = array[i];
-                    array[i] = node;
+                    array[i] = ghostNode;
                 }
-                if (array[i].DistanceToGoal <= node.DistanceToGoal)
+                else if (array[i].TotalCost <= node.TotalCost)
                     break;
             }
         }

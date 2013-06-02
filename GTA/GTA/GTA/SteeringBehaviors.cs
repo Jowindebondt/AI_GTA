@@ -74,8 +74,7 @@ namespace GTA
         public void CreateListAStar(Node start, Node target)
         {
             List<Node> closedSet = new List<Node>(); // Set of nodes that are already evaluated.
-            AStarQueue openSet = new AStarQueue();
-            //Queue<Node> openSet = new Queue<Node>();     //Set of tentative nodes to be evaluated, initially containing the start node
+            AStarQueue openSet = new AStarQueue(); //Set of tentative nodes to be evaluated, initially containing the start node
             List<Node> cameFrom = new List<Node>();    //List of navigated nodes
             int maxDistanceAtcf, distanceATCFLeft;
             List<Node> path = new List<Node>();
@@ -108,7 +107,7 @@ namespace GTA
                     Node nextNode = edge._nextNode;
                     var tentativeGScore = current.DistanceFromStart + DistBetween(current, nextNode);
 
-                    if (nextNode.aStarVisited && nextNode.DistanceFromStart < tentativeGScore) continue;
+                    if (nextNode.aStarVisited && tentativeGScore >= nextNode.DistanceFromStart) continue;
 
                     if (!openSet.Contains(nextNode) || tentativeGScore < nextNode.DistanceFromStart)
                     {
@@ -122,7 +121,6 @@ namespace GTA
                     }
                 }
             }
-            ResetNodes(closedSet);
         }
 
         private List<Node> ReconstructPath(Node current)
@@ -135,16 +133,6 @@ namespace GTA
             output.Add(current);
 
             return output;
-        }
-
-        private void ResetNodes(List<Node> nodes)
-        {
-            foreach (var node in nodes)
-            {
-                node.DistanceToGoal = -1;
-                node.aStarVisited = false;
-                node.DistanceFromStart = -1;
-            }
         }
 
         private int DistBetween(Node current, Node nextNode)
@@ -162,6 +150,12 @@ namespace GTA
             var differenceX = currentX - neighborX;
             var differenceY = currentY - neighborY;
 
+            if (differenceX < 0)
+                differenceX *= -1;
+
+            if (differenceY < 0)
+                differenceY *= -1;
+
             var cost = (int)Math.Sqrt(Math.Pow(differenceX, 2) + Math.Pow(differenceY, 2));
 
             edge._cost = cost;
@@ -178,6 +172,12 @@ namespace GTA
 
             var differenceX = currentX - goalX;
             var differenceY = currentY - goalY;
+
+            if (differenceX < 0)
+                differenceX *= -1;
+
+            if (differenceY < 0)
+                differenceY *= -1;
 
             var total = (Math.Sqrt(Math.Pow(differenceX, 2) + Math.Pow(differenceY, 2)));
 

@@ -184,7 +184,12 @@ namespace GTA
         private void ClearPreviousNode()
         {
             foreach (var node in _world._graph.getNodes())
+            {
                 node.Previous = null;
+                node.DistanceToGoal = -1;
+                node.aStarVisited = false;
+                node.DistanceFromStart = -1;
+            }
         }
 
         /// <summary>
