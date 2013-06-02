@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 
 namespace GTA
 {
-    class SteeringBehaviors
+    public class SteeringBehaviors
     {
         private Random rand;
         Vector2D m_vWanderTarget;

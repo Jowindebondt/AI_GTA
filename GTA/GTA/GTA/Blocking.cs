@@ -1,6 +1,6 @@
 ﻿namespace GTA
 {
-    enum Blocking
+    public enum Blocking
     {
         Person,
         Car,

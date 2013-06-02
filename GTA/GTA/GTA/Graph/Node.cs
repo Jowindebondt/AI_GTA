@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 
 namespace GTA
 {
-    class Node
+    public class Node
     {
         public List<Edge> _edges { get; set; }
         public Point _p { get; set; }
