@@ -139,8 +139,19 @@ namespace GTA
                     foreach (var edge in node._edges.Where(edge => edge._nextNode == node.Previous))
                         Primitives2D.DrawLine(spriteBatch, node._p.X, node._p.Y, edge._nextNode._p.X,
                                               edge._nextNode._p.Y, Color.DarkRed, 3f);
-                
-                node.drawn = true;
+            }
+
+            if (endNode != null)
+            {
+                Node currentNode = endNode;
+                while (currentNode.Previous != null)
+                {
+                    Edge edge = currentNode._edges.First(node => node._nextNode == currentNode.Previous);
+                    Primitives2D.DrawLine(spriteBatch, currentNode._p.X, currentNode._p.Y, edge._nextNode._p.X,
+                                              edge._nextNode._p.Y, Color.DarkBlue, 3f);
+                    currentNode = currentNode.Previous;
+                }
+                Primitives2D.FillRectangle(spriteBatch, endNode._p.X - 5, endNode._p.Y - 5, 10, 10, Color.DarkBlue);
             }
 
             foreach (var node in _graph.getNodes())

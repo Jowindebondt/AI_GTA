@@ -135,6 +135,7 @@
     <Compile Include="Person\Thug.cs" />
     <Compile Include="Program\World.cs" />
     <Compile Include="Common\VectorHelper.cs" />
+    <Compile Include="Program\AStarQueue.cs" />
     <Compile Include="World\Building.cs" />
     <Compile Include="World\Pavement.cs" />
     <Compile Include="World\Road.cs" />

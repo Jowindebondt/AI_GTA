@@ -16,7 +16,7 @@ namespace GTA
         public int TotalCost { get; set; }
         public Node Previous { get; set; }
         public bool aStarVisited { get; set; }
-
+        
         public Node(Point p)
         {
             _edges = new List<Edge>();
