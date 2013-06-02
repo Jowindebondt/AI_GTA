@@ -5,7 +5,7 @@ using System.Text;
 
 namespace GTA
 {
-    class Edge
+    public class Edge
     {
         public Node _nextNode { get; set; }
         public int _cost { get; set; }

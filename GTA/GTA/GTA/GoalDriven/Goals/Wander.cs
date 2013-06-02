@@ -10,16 +10,20 @@ namespace GTA.GoalDriven.Goals
         public override void Activate()
         {
             StatusOfGoal = Status.Active;
+            Owner.SteeringBehaviors.WanderOn();
         }
 
-        public override int Process()
+        public override Status Process()
         {
-            throw new NotImplementedException();
+            if(StatusOfGoal == Status.Inactive)
+                this.Activate();
+
+            return StatusOfGoal;
         }
 
         public override void Terminate()
         {
-            throw new NotImplementedException();
+            Owner.SteeringBehaviors.WanderOff();
         }
     }
 }

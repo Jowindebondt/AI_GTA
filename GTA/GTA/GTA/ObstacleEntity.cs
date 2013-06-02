@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace GTA
 {
-    abstract class ObstacleEntity : BaseGameEntity
+    public abstract class ObstacleEntity : BaseGameEntity
     {
         public Blocking Blocking { get; set; }
 

@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace GTA
 {
-    abstract class MovingEntity : BaseGameEntity
+    public abstract class MovingEntity : BaseGameEntity
     {
         public Vector2D Velocity { get; set; }
         public float Mass { get; set; }

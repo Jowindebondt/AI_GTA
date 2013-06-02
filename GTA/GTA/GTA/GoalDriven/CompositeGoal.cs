@@ -14,7 +14,7 @@ namespace GTA
             throw new NotImplementedException();
         }
 
-        public override int Process()
+        public override Status Process()
         {
             throw new NotImplementedException();
         }

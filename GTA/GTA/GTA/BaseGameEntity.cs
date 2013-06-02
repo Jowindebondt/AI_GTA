@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace GTA
 {
-    abstract class BaseGameEntity
+    public abstract class BaseGameEntity
     {
         public int Id { get; set; }
         public Vector2D Pos { get; set; }
