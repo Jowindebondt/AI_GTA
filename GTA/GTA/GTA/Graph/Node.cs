@@ -15,6 +15,7 @@ namespace GTA
         public int DistanceToGoal { get; set; }
         public int TotalCost { get; set; }
         public Node Previous { get; set; }
+        public bool aStarVisited { get; set; }
 
         public Node(Point p)
         {
@@ -22,6 +23,7 @@ namespace GTA
             _p = p;
             drawn = false;
             DistanceFromStart = -1;
+            aStarVisited = false;
         }
 
         public void addEdge(Edge edge)

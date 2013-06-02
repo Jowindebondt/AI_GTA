@@ -92,21 +92,18 @@ namespace GTA
             {
                 var current = openSet.Dequeue();
                 closedSet.Add(current);
+                current.aStarVisited = true;
 
-                var _tentativeIsBetter = false;
+                bool _tentativeIsBetter;
                 if (current.DistanceToGoal < distanceATCFLeft)
                     distanceATCFLeft = current.DistanceToGoal;
 
                 if (current == target)
-                {
-                    ReconstructPath(current, path);
-
-                    AStarTargets = path;
-                }
+                    AStarTargets = ReconstructPath(current);
 
                 foreach (var edge in current._edges)
                 {
-                    if (closedSet.Contains(edge._nextNode)) continue;
+                    if (edge._nextNode.aStarVisited) continue;
                     
                     var tentativeGScore = current.DistanceFromStart + DistBetween(current, edge._nextNode);
                     
@@ -119,33 +116,30 @@ namespace GTA
                         _tentativeIsBetter = true;
                     }
                     else
-                    {
                         _tentativeIsBetter = false;
-                    }
 
                     if (!_tentativeIsBetter) continue;
                     
                     edge._nextNode.Previous = current;
                     edge._nextNode.DistanceFromStart = (int)tentativeGScore;
                     edge._nextNode.TotalCost = edge._nextNode.DistanceFromStart + edge._nextNode.DistanceToGoal;
+                    edge._nextNode.aStarVisited = true;
+                    closedSet.Add(edge._nextNode);
                 }
             }
             ResetNodes(closedSet);
-
-            AStarTargets = path;
         }
 
-        private void ReconstructPath(Node current, List<Node> output)
+        private List<Node> ReconstructPath(Node current)
         {
-            if (current.Previous == null)
-            {
-                output.Add(current);
-            }
-            else
-            {
-                ReconstructPath(current.Previous, output);
-                output.Add(current);
-            }
+            var output = new List<Node>();
+
+            if (current.Previous != null)
+                output = ReconstructPath(current.Previous);
+            
+            output.Add(current);
+
+            return output;
         }
 
         private void ResetNodes(List<Node> nodes)
@@ -153,7 +147,9 @@ namespace GTA
             foreach (var node in nodes)
             {
                 node.DistanceToGoal = -1;
+                node.aStarVisited = false;
                 node.DistanceFromStart = -1;
+                node.Previous = null;
             }
         }
 
@@ -165,8 +161,6 @@ namespace GTA
             {
                 if (edge._nextNode.DistanceToGoal <= 0.0)
                 {
-                    var edgeDistance = 0.0;
-
                     var currentX = current._p.X;
                     var currentY = current._p.Y;
                     var neighborX = nextNode._p.X;
@@ -175,9 +169,10 @@ namespace GTA
                     var differenceX = currentX - neighborX;
                     var differenceY = currentY - neighborY;
 
-                    edgeDistance = edgeDistance + ((Math.Sqrt(Math.Pow(differenceX, 2) + Math.Pow(differenceY, 2))) / 1000);
+                    var edgeDistance = ((Math.Sqrt(Math.Pow(differenceX, 2) + Math.Pow(differenceY, 2))) / 1000);
 
                     edge._cost = (int)edgeDistance;
+                    cost = edgeDistance;
                 }
             }
             return cost;
