@@ -5,24 +5,9 @@ using System.Text;
 
 namespace GTA
 {
-    class CompositeGoal : Goal
+    public abstract class CompositeGoal : Goal
     {
         public Stack<Goal> SubGoals { get; set; }
-
-        public override void Activate()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Status Process()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Terminate()
-        {
-            throw new NotImplementedException();
-        }
 
         public void AddSubgoal(Goal _goal)
         {
