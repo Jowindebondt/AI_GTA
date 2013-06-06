@@ -24,9 +24,20 @@ namespace GTA
         public Vector2D SteeringForce { get; set; }
         public Vector2D Rotation { get; set; }
         public Vector2D Target { get; set; }
+        public Think Brain { get; set; }
+        public bool enemyReached { get; set; }
+
+        public Point SafeHouse { get; set; }
+
+        public bool Flee { get; set; }
+        public bool Wander { get; set; }
+        public bool Seek { get; set; }
+        public bool Explore { get; set; }
+        public bool AStar { get; set; }
 
         public abstract override void Update(float timeElapsed);
         public abstract override void Render(SpriteBatch spriteBatch);
         public abstract override void Load(GraphicsDevice graphicsDevice, ContentManager content);
+        public abstract bool isEnemyClose();
     }
 }

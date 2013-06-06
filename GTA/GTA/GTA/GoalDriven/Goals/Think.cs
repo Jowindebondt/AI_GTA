@@ -6,29 +6,52 @@ using GTA;
 
 namespace GTA
 {
-    class Think : CompositeGoal
+    public class Think : CompositeGoal
     {
+        private Random rand;
+
+        public Think(MovingEntity owner)
+        {
+            Owner = owner;
+            SubGoals = new Stack<Goal>();
+            rand = new Random();
+            AddSubgoal(new Wander(Owner));
+        }
+
         public override void Activate()
         {
-            throw new NotImplementedException();
+            StatusOfGoal = Status.Active;
         }
 
         public override Status Process()
         {
-            throw new NotImplementedException();
+            if(StatusOfGoal == Status.Inactive)
+                Activate();
+
+            return ProcessSubgoals();
         }
 
         public override void Terminate()
         {
-            throw new NotImplementedException();
+            StatusOfGoal = Status.Failed;
         }
 
         public void Arbitrate()
         {
-            double best = 0;
-            Goal bestGoal = null;
+            int randNr = rand.Next(0, 200);
+            //if (randNr % 199 == 0)
+            //    AddSubgoal(new Wander(Owner));
+            //else if (randNr % 198 == 0)
+            //    AddSubgoal(new AttackEnemy(Owner));
+            //else if (randNr % 197 == 0)
+            //    AddSubgoal(new AvoidEnemy(Owner));
+            /*else*/ if (randNr % 196 == 0)
+                AddSubgoal(new GoToSafeHouse(Owner));
+        }
 
-            
+        public override string ToString()
+        {
+            return "Think";
         }
     }
 }

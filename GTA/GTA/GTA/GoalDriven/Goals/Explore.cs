@@ -5,9 +5,9 @@ using System.Text;
 
 namespace GTA
 {
-    class Wander : AtomicGoal
+    class Explore : AtomicGoal
     {
-        public Wander(MovingEntity owner)
+        public Explore(MovingEntity owner)
         {
             Owner = owner;
         }
@@ -15,25 +15,28 @@ namespace GTA
         public override void Activate()
         {
             StatusOfGoal = Status.Active;
-            Owner.Wander = true;
+            Owner.Explore = true;
         }
 
         public override Status Process()
         {
-            if(StatusOfGoal == Status.Inactive)
-                this.Activate();
+            if (StatusOfGoal == Status.Inactive)
+                Activate();
+
+            if(Owner.SteeringBehaviors.ExploreTargets.Count == 0)
+                StatusOfGoal = Status.Completed;
 
             return StatusOfGoal;
         }
 
         public override void Terminate()
         {
-            Owner.Wander = false;
+            Owner.Explore = false;
         }
 
         public override string ToString()
         {
-            return "Wander";
+            return "Explore";
         }
     }
 }

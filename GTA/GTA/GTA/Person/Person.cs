@@ -14,7 +14,7 @@ namespace GTA
         public const int Frames = 3;
         public const int FramesPerSec = 5;
         public int _sourceY;
-        public Goal CurrentGoal;
+        public SpriteFont Font { get; set; }
 
         public abstract override void Update(float timeElapsed);
         public abstract override void Render(SpriteBatch spriteBatch);

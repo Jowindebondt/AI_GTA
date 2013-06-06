@@ -121,6 +121,12 @@
     <Compile Include="GoalDriven\CompositeGoal.cs" />
     <Compile Include="GoalDriven\Goal.cs" />
     <Compile Include="GoalDriven\Goals\AttackEnemy.cs" />
+    <Compile Include="GoalDriven\Goals\AvoidEnemy.cs" />
+    <Compile Include="GoalDriven\Goals\Explore.cs" />
+    <Compile Include="GoalDriven\Goals\Flee.cs" />
+    <Compile Include="GoalDriven\Goals\GoToSafeHouse.cs" />
+    <Compile Include="GoalDriven\Goals\PathFinding.cs" />
+    <Compile Include="GoalDriven\Goals\Seek.cs" />
     <Compile Include="GoalDriven\Goals\Think.cs" />
     <Compile Include="GoalDriven\Goals\Wander.cs" />
     <Compile Include="Graph\Edge.cs" />

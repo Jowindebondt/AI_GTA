@@ -15,7 +15,7 @@ namespace GTA
 
     public abstract class Goal
     {
-        protected MovingEntity Owner { get; set; }
+        public MovingEntity Owner { get; set; }
         public Status StatusOfGoal { get; set; }
 
         public abstract void Activate();

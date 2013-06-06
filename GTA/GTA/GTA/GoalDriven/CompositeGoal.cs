@@ -11,6 +11,7 @@ namespace GTA
 
         public void AddSubgoal(Goal _goal)
         {
+            RemoveAllSubgoals();
             SubGoals.Push(_goal);
         }
 

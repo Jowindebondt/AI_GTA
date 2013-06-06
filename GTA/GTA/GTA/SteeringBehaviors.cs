@@ -24,8 +24,8 @@ namespace GTA
         public double m_dWeightObstacleAvoidance;
 
         private MovingEntity _entity;
-        private Queue<Vector2D> ExploreTargets;
-        private List<Node> AStarTargets;
+        public Queue<Vector2D> ExploreTargets;
+        public List<Node> AStarTargets;
 
         private bool useWander;
         private bool useFlee;
@@ -199,11 +199,6 @@ namespace GTA
             return desiredVelocity - _entity.Velocity;
         }
 
-        private Vector2D Arrive(Vector2D target)
-        {
-            return new Vector2D();
-        }
-
         private Vector2D Wander()
         {
             //this behavior is dependent on the update rate, so this line must
@@ -244,7 +239,7 @@ namespace GTA
             double toTarget = (exploreTarget - _entity.Pos).Length();
 
             if (toTarget < 10d)
-                ExploreTargets.Enqueue(ExploreTargets.Dequeue());
+                ExploreTargets.Dequeue();
 
             Vector2D desiredVelocity = Vector2D.Vec2DNormalize(exploreTarget - _entity.Pos) * _entity.MaxSpeed;
             return desiredVelocity - _entity.Velocity;

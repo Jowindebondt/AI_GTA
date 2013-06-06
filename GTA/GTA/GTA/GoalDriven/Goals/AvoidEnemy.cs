@@ -5,35 +5,42 @@ using System.Text;
 
 namespace GTA
 {
-    class Wander : AtomicGoal
+    class AvoidEnemy : CompositeGoal
     {
-        public Wander(MovingEntity owner)
+        public AvoidEnemy(MovingEntity owner)
         {
             Owner = owner;
+            SubGoals = new Stack<Goal>();
+            AddSubgoal(new Wander(Owner));
         }
 
         public override void Activate()
         {
             StatusOfGoal = Status.Active;
-            Owner.Wander = true;
         }
 
         public override Status Process()
         {
             if(StatusOfGoal == Status.Inactive)
-                this.Activate();
+                Activate();
 
-            return StatusOfGoal;
+            if(Owner.isEnemyClose())
+                AddSubgoal(new Flee(Owner));
+            else
+                AddSubgoal(new Wander(Owner));
+
+            return ProcessSubgoals();
         }
 
         public override void Terminate()
         {
-            Owner.Wander = false;
+            RemoveAllSubgoals();
+            StatusOfGoal = Status.Inactive;
         }
 
         public override string ToString()
         {
-            return "Wander";
+            return "Avoid Enemy";
         }
     }
 }

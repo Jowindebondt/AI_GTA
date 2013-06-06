@@ -5,13 +5,18 @@ using System.Text;
 
 namespace GTA
 {
-    class AttackEnemy : CompositeGoal
+    class GoToSafeHouse: CompositeGoal
     {
-        public AttackEnemy(MovingEntity owner)
+        private Goal pathFinding;
+        private Goal flee;
+        public GoToSafeHouse(MovingEntity owner)
         {
             Owner = owner;
             SubGoals = new Stack<Goal>();
-            AddSubgoal(new Explore(Owner));
+            pathFinding = new PathFinding(Owner);
+            flee = new Flee(Owner);
+
+            AddSubgoal(pathFinding);
         }
 
         public override void Activate()
@@ -25,9 +30,9 @@ namespace GTA
                 Activate();
 
             if(Owner.isEnemyClose())
-                AddSubgoal(new Seek(Owner));
+                AddSubgoal(flee);
             else
-                AddSubgoal(new Explore(Owner));
+                AddSubgoal(pathFinding);
 
             return ProcessSubgoals();
         }
@@ -40,7 +45,7 @@ namespace GTA
 
         public override string ToString()
         {
-            return "Attack Enemy";
+            return "Go To SafeHouse";
         }
     }
 }

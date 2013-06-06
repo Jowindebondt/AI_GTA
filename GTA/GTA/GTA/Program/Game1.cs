@@ -119,6 +119,15 @@ namespace GTA
                 }
             }
 
+            if (key.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.B))
+            {
+                if (!KeyDown)
+                {
+                    KeyDown = true;
+                    World.GetInstance()._drawBrain = !World.GetInstance()._drawBrain;
+                }
+            }
+
             if (key.IsKeyDown(Keys.Up))
             {
                 _world.UpdateThug(Keys.Up);
@@ -139,7 +148,7 @@ namespace GTA
                 _world.UpdateThug(Keys.Down);
             }
 
-            if (key.IsKeyUp(Microsoft.Xna.Framework.Input.Keys.F) || key.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.F1))
+            if (key.IsKeyUp(Microsoft.Xna.Framework.Input.Keys.F) || key.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.F1) || key.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.B))
                 KeyDown = false;
         }
 
@@ -167,14 +176,14 @@ namespace GTA
         private void MousePresses(MouseState mouse)
         {
             Random rand = new Random();
-            if (mouse.LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed)
+            if (mouse.LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed && mouse.X > 0 && mouse.Y > 0)
             {
                 ClearPreviousNode();
 
-                Node startnode = _world._graph.GetNodeFromPoint(((int)(_world.MovingEntities[1].Pos.X/32)* 32),
+                Node startnode = World.GetInstance()._graph.GetNodeFromPoint(((int)(_world.MovingEntities[1].Pos.X/32)* 32),
                                                                 (int)(_world.MovingEntities[1].Pos.Y/32)* 32);
 
-                Node endnode = _world._graph.GetNodeFromPoint((int)(mouse.X / 32)*32,
+                Node endnode = World.GetInstance()._graph.GetNodeFromPoint((int)(mouse.X / 32) * 32,
                                                                 (int)(mouse.Y / 32)*32); // / 32 * 32!!!
                 _world.MovingEntities[1].SteeringBehaviors.CreateListAStar(startnode, endnode);
                 _world.endNode = endnode;

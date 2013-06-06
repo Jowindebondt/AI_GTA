@@ -18,7 +18,10 @@ namespace GTA
         private MovingEntity thug;
         public Graph _graph;
         public bool _drawGraph;
+        public bool _drawBrain;
         public Node endNode { get; set; }
+        public Texture2D safehouseTex;
+        private Point safeHouse;
 
         private World()
         {
@@ -29,22 +32,26 @@ namespace GTA
             _drawGraph = false;
 
             thug = new Thug() { Pos = new Vector2D(800, 450), _sourceY = 0 };
+            safeHouse = new Point(982, 243);
 
             MovingEntities.Add(thug);
 
             for (int i = 0; i < 1; i++)
             {
-                int next = rand.Next(0, 3);
+                int next = rand.Next(0, 4);
                 
                 var seek = false;
                 var explore = false;
                 var wander = false;
                 var flee = false;
+                var astar = false;
 
                 if (next == 1)
                     seek = true;
                 else if (next == 2)
                     explore = true;
+                else if (next == 3)
+                    astar = true;
                 else
                 {
                     wander = true;
@@ -54,17 +61,22 @@ namespace GTA
                 int citizenNr = rand.Next(1, 7);
 
                 //---Random---//
-                var citizen = new Citizen() { Pos = new Vector2D(rand.Next(100, 1500), rand.Next(100, 700)), _sourceY = citizenNr * 16, enemy = thug, Flee = false, Wander = false, Seek = false, Explore = false, AStar = true };
-                //var citizen = new Citizen() { Pos = new Vector2D(rand.Next(100, 1500), rand.Next(100, 700)), _sourceY = citizenNr * 16, enemy = thug, Flee = flee, Wander = wander, Seek = seek, Explore = explore };
+                //var citizen = new Citizen { Pos = new Vector2D(rand.Next(100, 1500), rand.Next(100, 700)), _sourceY = citizenNr * 16, enemy = thug, Flee = flee, Wander = wander, Seek = seek, Explore = explore, AStar = astar };
                 
                 //---Seek---//
-                //var citizen = new Citizen() { Pos = new Vector2D(rand.Next(100, 1500), rand.Next(100, 700)), _sourceY = citizenNr * 16, enemy = thug, Flee = false, Wander = false, Seek = true, Explore = false };
+                //var citizen = new Citizen { Pos = new Vector2D(rand.Next(100, 1500), rand.Next(100, 700)), _sourceY = citizenNr * 16, enemy = thug, Flee = false, Wander = false, Seek = true, Explore = false, AStar = false };
 
                 //---Flee & Wander---//
-                //var citizen = new Citizen() { Pos = new Vector2D(rand.Next(100, 1500), rand.Next(100, 700)), _sourceY = citizenNr * 16, enemy = thug, Flee = true, Wander = true, Seek = false, Explore = false };
+                //var citizen = new Citizen { Pos = new Vector2D(rand.Next(100, 1500), rand.Next(100, 700)), _sourceY = citizenNr * 16, enemy = thug, Flee = true, Wander = true, Seek = false, Explore = false, AStar = false };
 
                 //---Explore---//
-                //var citizen = new Citizen() { Pos = new Vector2D(rand.Next(100, 1500), rand.Next(100, 700)), _sourceY = citizenNr * 16, enemy = thug, Flee = false, Wander = false, Seek = false, Explore = true };
+                //var citizen = new Citizen { Pos = new Vector2D(rand.Next(100, 1500), rand.Next(100, 700)), _sourceY = citizenNr * 16, enemy = thug, Flee = false, Wander = false, Seek = false, Explore = true, AStar = false };
+
+                //---A*---//
+                //var citizen = new Citizen { Pos = new Vector2D(rand.Next(100, 1500), rand.Next(100, 700)), _sourceY = citizenNr * 16, enemy = thug, Flee = false, Wander = false, Seek = false, Explore = false, AStar = true };
+                
+                //---GDB---//
+                var citizen = new Citizen { Pos = new Vector2D(rand.Next(100, 1500), rand.Next(100, 700)), _sourceY = citizenNr * 16, enemy = thug, Flee = false, Wander = false, Seek = false, Explore = false, AStar = false, SafeHouse  = safeHouse};
                 MovingEntities.Add(citizen);
             }
 
@@ -105,6 +117,8 @@ namespace GTA
             foreach (var entity in ObstacleEntities)
                 entity.Load(graphicsDevice, content);
 
+            safehouseTex = content.Load<Texture2D>("home");
+
             CreateGraph();
         }
 
@@ -119,43 +133,46 @@ namespace GTA
             foreach (var entity in ObstacleEntities)
                 entity.Render(spriteBatch);
 
+            if (_drawGraph)
+            {
+                foreach (var node in _graph.getNodes())
+                {
+                    Primitives2D.DrawCircle(spriteBatch, node._p.X, node._p.Y, 2, 25, Color.LightGreen);
+                    foreach (var edge in node._edges)
+                    {
+                        if (edge._nextNode.drawn) continue;
+
+                        Primitives2D.DrawLine(spriteBatch, node._p.X, node._p.Y, edge._nextNode._p.X,
+                                              edge._nextNode._p.Y, Color.LightGreen);
+                    }
+
+                    if (node.Previous != null)
+                        foreach (var edge in node._edges.Where(edge => edge._nextNode == node.Previous))
+                            Primitives2D.DrawLine(spriteBatch, node._p.X, node._p.Y, edge._nextNode._p.X,
+                                                  edge._nextNode._p.Y, Color.DarkRed, 3f);
+                }
+
+                if (endNode != null)
+                {
+                    Node currentNode = endNode;
+                    while (currentNode.Previous != null)
+                    {
+                        Edge edge = currentNode._edges.First(node => node._nextNode == currentNode.Previous);
+                        Primitives2D.DrawLine(spriteBatch, currentNode._p.X, currentNode._p.Y, edge._nextNode._p.X,
+                                              edge._nextNode._p.Y, Color.DarkBlue, 3f);
+                        currentNode = currentNode.Previous;
+                    }
+                    Primitives2D.FillRectangle(spriteBatch, endNode._p.X - 5, endNode._p.Y - 5, 10, 10, Color.DarkBlue);
+                }
+
+                foreach (var node in _graph.getNodes())
+                    node.drawn = false;
+            }
+
             foreach (var entity in MovingEntities)
                 entity.Render(spriteBatch);
 
-            if (!_drawGraph) return;
-            
-            foreach (var node in _graph.getNodes())
-            {
-                Primitives2D.DrawCircle(spriteBatch, node._p.X, node._p.Y, 2, 25, Color.LightGreen);
-                foreach (var edge in node._edges)
-                {
-                    if (edge._nextNode.drawn) continue;
-
-                    Primitives2D.DrawLine(spriteBatch, node._p.X, node._p.Y, edge._nextNode._p.X,
-                                          edge._nextNode._p.Y, Color.LightGreen);
-                }
-
-                if (node.Previous != null)
-                    foreach (var edge in node._edges.Where(edge => edge._nextNode == node.Previous))
-                        Primitives2D.DrawLine(spriteBatch, node._p.X, node._p.Y, edge._nextNode._p.X,
-                                              edge._nextNode._p.Y, Color.DarkRed, 3f);
-            }
-
-            if (endNode != null)
-            {
-                Node currentNode = endNode;
-                while (currentNode.Previous != null)
-                {
-                    Edge edge = currentNode._edges.First(node => node._nextNode == currentNode.Previous);
-                    Primitives2D.DrawLine(spriteBatch, currentNode._p.X, currentNode._p.Y, edge._nextNode._p.X,
-                                              edge._nextNode._p.Y, Color.DarkBlue, 3f);
-                    currentNode = currentNode.Previous;
-                }
-                Primitives2D.FillRectangle(spriteBatch, endNode._p.X - 5, endNode._p.Y - 5, 10, 10, Color.DarkBlue);
-            }
-
-            foreach (var node in _graph.getNodes())
-                node.drawn = false;
+            spriteBatch.Draw(safehouseTex, new Vector2(safeHouse.X, safeHouse.Y), Color.White);
         }
 
         public void UpdateThug(Keys key)

@@ -12,11 +12,6 @@ namespace GTA
     class Citizen : Person
     {
         public MovingEntity enemy;
-        public bool Flee;
-        public bool Wander;
-        public bool Seek;
-        public bool Explore;
-        public bool AStar;
 
         public Citizen()
         {
@@ -31,11 +26,16 @@ namespace GTA
             Side = Heading.Perp();
             Target = new Vector2D(0,0);
             Bradius = 16;
+            Brain = new Think(this);
+            Brain.Activate();
         }
 
         public override void Update(float timeElapsed)
         {
             TimeEllapsed = timeElapsed;
+            
+            Brain.Arbitrate();
+            Brain.Process();
 
             if (Flee)
                 SteeringBehaviors.FleeOn();
@@ -90,12 +90,40 @@ namespace GTA
 
         public override void Render(SpriteBatch spriteBatch)
         {
+            if (World.GetInstance()._drawBrain)
+                DrawGdbText(Brain, Pos.X + 10, Pos.Y - 20, spriteBatch);
+
             _personTexture.DrawFrame(spriteBatch, Pos, _sourceY, Heading);
+        }
+
+        private void DrawGdbText(Goal currentGoal, double x, double y, SpriteBatch spriteBatch)
+        {
+            spriteBatch.DrawString(Font, currentGoal.ToString(), new Vector2((float)x, (float)y),
+                                       new Color(0, 0, 0), 0f, Vector2.Zero, .7f, SpriteEffects.None, 0f);
+
+            if (currentGoal.GetType().BaseType == typeof(CompositeGoal))
+            {
+                for (int i = 0; i < ((CompositeGoal) currentGoal).SubGoals.Count; i ++)
+                {
+                    Goal nextGoal = ((CompositeGoal) currentGoal).SubGoals.ElementAt(i);
+                    DrawGdbText(nextGoal, x + 15, y + ((i + 1) * 15), spriteBatch);
+                }
+            }
         }
 
         public override void Load(GraphicsDevice graphicsDevice, ContentManager content)
         {
             _personTexture.Load(graphicsDevice, content, "people2", Frames, FramesPerSec);
+            Font = content.Load<SpriteFont>("font");
+        }
+
+        public override bool isEnemyClose()
+        {
+            int radius = 200;
+            if (Pos.X - enemy.Pos.X < radius && Pos.X - enemy.Pos.X > -radius &&
+                Pos.Y - enemy.Pos.Y < radius && Pos.Y - enemy.Pos.Y > -radius)
+                return true;
+            return false;
         }
     }
 }

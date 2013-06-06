@@ -35,5 +35,10 @@ namespace GTA
         {
             _personTexture.Load(graphicsDevice, content, "people2", Frames, FramesPerSec);
         }
+
+        public override bool isEnemyClose()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
