@@ -28,6 +28,17 @@ namespace GTA
             Bradius = 16;
             Brain = new Think(this);
             Brain.Activate();
+
+            fm = new FuzzyModule();
+
+            Fuzzy_Desirability = fm.CreateFLV("Desirability");
+            
+            Fuzzy_DistanceToTarget = fm.CreateFLV("Distance to Target");
+            Fuzzy_DistanceToTarget.AddLeftShoulderSet("TargetClose", 0, 25, 150);
+            Fuzzy_DistanceToTarget.AddTriangleSet("TargetMedium", 25, 50, 300);
+            Fuzzy_DistanceToTarget.AddRightShoulderSet("TargetFar", 150, 300, 500);
+
+            Fuzzy_Strength = fm.CreateFLV("Strength");
         }
 
         public override void Update(float timeElapsed)
