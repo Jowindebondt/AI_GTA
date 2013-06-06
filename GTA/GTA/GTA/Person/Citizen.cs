@@ -29,16 +29,25 @@ namespace GTA
             Brain = new Think(this);
             Brain.Activate();
 
-            fm = new FuzzyModule();
+//             fm = new FuzzyModule();
+// 
+//             Fuzzy_Desirability = fm.CreateFLV("Desirability");
+//             FuzzySet Low_Desirability = Fuzzy_Desirability.AddLeftShoulderSet("Low", 0, 100, 200);
+//             FuzzySet Average_Desirability = Fuzzy_Desirability.AddTriangleSet("Average", 125, 250, 375);
+//             FuzzySet Very_Desirability = Fuzzy_Desirability.AddRightShoulderSet("Very", 350, 400, 500);
+//             
+//             Fuzzy_DistanceToTarget = fm.CreateFLV("Distance to Target");
+//             FuzzySet TargetClose = Fuzzy_DistanceToTarget.AddLeftShoulderSet("TargetClose", 0, 50, 150);
+//             FuzzySet TargetMedium = Fuzzy_DistanceToTarget.AddTriangleSet("TargetMedium", 25, 50, 300);
+//             FuzzySet TargetFar = Fuzzy_DistanceToTarget.AddRightShoulderSet("TargetFar", 150, 300, 500);
+// 
+//             Fuzzy_Strength = fm.CreateFLV("Strength");
+//             FuzzySet Weak_Strength = Fuzzy_Strength.AddLeftShoulderSet("Weak", 0, 10, 50);
+//             FuzzySet Average_Strength = Fuzzy_Strength.AddTriangleSet("Average", 25, 50, 75);
+//             FuzzySet Strong_Strength = Fuzzy_Strength.AddRightShoulderSet("Strong", 50, 75, 100);
+// 
+//             fm.AddRule(new FuzzyAnd(), );
 
-            Fuzzy_Desirability = fm.CreateFLV("Desirability");
-            
-            Fuzzy_DistanceToTarget = fm.CreateFLV("Distance to Target");
-            Fuzzy_DistanceToTarget.AddLeftShoulderSet("TargetClose", 0, 25, 150);
-            Fuzzy_DistanceToTarget.AddTriangleSet("TargetMedium", 25, 50, 300);
-            Fuzzy_DistanceToTarget.AddRightShoulderSet("TargetFar", 150, 300, 500);
-
-            Fuzzy_Strength = fm.CreateFLV("Strength");
         }
 
         public override void Update(float timeElapsed)
@@ -47,7 +56,7 @@ namespace GTA
             
             Brain.Arbitrate();
             Brain.Process();
-
+            
             if (Flee)
                 SteeringBehaviors.FleeOn();
             else

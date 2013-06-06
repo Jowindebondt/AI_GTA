@@ -195,6 +195,12 @@ namespace GTA
 
         private Vector2D Seek(Vector2D target)
         {
+            int radius = 50;
+
+            if (_entity.Pos.X - target.X < radius && _entity.Pos.X - target.X > -radius &&
+                _entity.Pos.Y - target.Y < radius && _entity.Pos.Y - target.Y > -radius)
+                _entity.enemyReached = true;
+
             Vector2D desiredVelocity = Vector2D.Vec2DNormalize(target - _entity.Pos) * _entity.MaxSpeed;
             return desiredVelocity - _entity.Velocity;
         }

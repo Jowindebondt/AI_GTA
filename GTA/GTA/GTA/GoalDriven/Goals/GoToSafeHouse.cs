@@ -29,12 +29,9 @@ namespace GTA
             if(StatusOfGoal == Status.Inactive)
                 Activate();
 
-            if(Owner.isEnemyClose())
-                AddSubgoal(flee);
-            else
-                AddSubgoal(pathFinding);
+            StatusOfGoal = ProcessSubgoals();
 
-            return ProcessSubgoals();
+            return StatusOfGoal;
         }
 
         public override void Terminate()

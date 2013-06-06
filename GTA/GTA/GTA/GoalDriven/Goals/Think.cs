@@ -15,7 +15,6 @@ namespace GTA
             Owner = owner;
             SubGoals = new Stack<Goal>();
             rand = new Random();
-            AddSubgoal(new Wander(Owner));
         }
 
         public override void Activate()
@@ -38,15 +37,16 @@ namespace GTA
 
         public void Arbitrate()
         {
-            int randNr = rand.Next(0, 200);
-            if (randNr % 199 == 0)
-                AddSubgoal(new Wander(Owner));
-            else if (randNr % 198 == 0)
-                AddSubgoal(new AttackEnemy(Owner));
-            else if (randNr % 197 == 0)
-                AddSubgoal(new AvoidEnemy(Owner));
-            else if (randNr % 196 == 0)
-                AddSubgoal(new GoToSafeHouse(Owner));
+            if (SubGoals.Count == 0)
+            {
+                int randNr = rand.Next(0, 200);
+                if (randNr%198 == 0)
+                    AddSubgoal(new AttackEnemy(Owner));
+                else if (randNr%197 == 0)
+                    AddSubgoal(new AvoidEnemy(Owner));
+                else if (randNr%196 == 0)
+                    AddSubgoal(new GoToSafeHouse(Owner));
+            }
         }
 
         public override string ToString()

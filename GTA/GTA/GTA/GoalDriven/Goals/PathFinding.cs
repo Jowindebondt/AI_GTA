@@ -17,11 +17,16 @@ namespace GTA
             StatusOfGoal = Status.Active;
             Owner.AStar = true;
 
-            Node startnode = World.GetInstance()._graph.GetNodeFromPoint(((int)(Owner.Pos.X / 32) * 32),
-                                                                (int)(Owner.Pos.Y / 32) * 32);
+            Node startnode;
 
-            Node endnode = World.GetInstance()._graph.GetNodeFromPoint((int)(Owner.SafeHouse.X / 32) * 32,
-                                                            (int)(Owner.SafeHouse.Y / 32) * 32); // / 32 * 32!!!
+            Node endnode; =
+
+            while (startnode != null)
+                startnode = World.GetInstance()._graph.GetNodeFromPoint(((int) (Owner.Pos.X/32)*32),
+                                                                        (int) (Owner.Pos.Y/32)*32);
+            while (endnode != null)
+                endnode = World.GetInstance()._graph.GetNodeFromPoint((int) (Owner.SafeHouse.X/32)*32,
+                                                                      (int) (Owner.SafeHouse.Y/32)*32;
             Owner.SteeringBehaviors.CreateListAStar(startnode, endnode);
         }
 
@@ -29,6 +34,9 @@ namespace GTA
         {
             if(StatusOfGoal == Status.Inactive)
                 Activate();
+
+            if(Owner.SteeringBehaviors.AStarTargets.Count == 0)
+                StatusOfGoal = Status.Completed;
 
             return StatusOfGoal;
         }

@@ -23,6 +23,9 @@ namespace GTA
             if(StatusOfGoal == Status.Inactive)
                 Activate();
 
+            if(!Owner.isEnemyClose())
+                StatusOfGoal = Status.Completed;
+
             return StatusOfGoal;
         }
 

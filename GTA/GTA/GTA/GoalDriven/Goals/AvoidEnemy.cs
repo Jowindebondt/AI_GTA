@@ -11,7 +11,6 @@ namespace GTA
         {
             Owner = owner;
             SubGoals = new Stack<Goal>();
-            AddSubgoal(new Wander(Owner));
         }
 
         public override void Activate()
@@ -26,10 +25,10 @@ namespace GTA
 
             if(Owner.isEnemyClose())
                 AddSubgoal(new Flee(Owner));
-            else
-                AddSubgoal(new Wander(Owner));
 
-            return ProcessSubgoals();
+            StatusOfGoal = ProcessSubgoals();
+
+            return StatusOfGoal;
         }
 
         public override void Terminate()

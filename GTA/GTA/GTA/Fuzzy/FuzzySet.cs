@@ -8,17 +8,7 @@ namespace GTA
 {
     public abstract class FuzzySet
     {
-        public double Dom
-        {
-            get { return Dom; }
-            set
-            {
-                if (value <= 1 && value >= 0) 
-                    Dom = value;
-                else
-                    MessageBox.Show("Error!");
-            }
-        }
+        public double Dom { get; set; }
         public double RepresentativeValue { get; private set; }
 
         public FuzzySet(double RepVal)
@@ -31,8 +21,9 @@ namespace GTA
 
         public void OrwithDom(double val)
         {
-            if (val > Dom) 
-                Dom = val;
+            if(val <= 1.0d && val >=0.0d)
+                if (val > Dom) 
+                    Dom = val;
         }
 
         public void ClearDom()

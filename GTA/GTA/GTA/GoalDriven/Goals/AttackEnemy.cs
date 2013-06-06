@@ -26,10 +26,10 @@ namespace GTA
 
             if(Owner.isEnemyClose())
                 AddSubgoal(new Seek(Owner));
-            else
-                AddSubgoal(new Explore(Owner));
 
-            return ProcessSubgoals();
+            StatusOfGoal = ProcessSubgoals();
+
+            return StatusOfGoal;
         }
 
         public override void Terminate()
