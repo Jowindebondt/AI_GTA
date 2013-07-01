@@ -27,6 +27,7 @@ namespace GTA
         public Think Brain { get; set; }
         public bool enemyReached { get; set; }
         public int Strength { get; set; }
+        public double DistanceToTarget { get; set; }
 
         public Point SafeHouse { get; set; }
         public FuzzyModule fm { get; set; }
@@ -43,6 +44,7 @@ namespace GTA
         public abstract override void Update(float timeElapsed);
         public abstract override void Render(SpriteBatch spriteBatch);
         public abstract override void Load(GraphicsDevice graphicsDevice, ContentManager content);
+        public abstract void CalculateDistance();
         public abstract bool isEnemyClose();
     }
 }

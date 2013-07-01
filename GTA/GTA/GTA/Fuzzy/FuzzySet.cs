@@ -6,9 +6,20 @@ using System.Windows.Forms;
 
 namespace GTA
 {
-    public abstract class FuzzySet
+    public abstract class FuzzySet : FuzzyTerm
     {
-        public double Dom { get; set; }
+        private double dom;
+        public double Dom
+        {
+            get { return dom; }
+            set
+            {
+                if (value <= 1 && value >= 0) dom = value;
+                else Console.WriteLine("<FuzzySet::SetDOM>: invalid value");
+            }
+
+        }
+
         public double RepresentativeValue { get; private set; }
 
         public FuzzySet(double RepVal)
@@ -19,14 +30,12 @@ namespace GTA
 
         public abstract double CalculateDom(double val);
 
-        public void OrwithDom(double val)
+        public override void OrWithDom(double val)
         {
-            if(val <= 1.0d && val >=0.0d)
-                if (val > Dom) 
-                    Dom = val;
+            if (val > Dom) Dom = val; 
         }
 
-        public void ClearDom()
+        public override void ClearDom()
         {
             Dom = 0.0d;
         }

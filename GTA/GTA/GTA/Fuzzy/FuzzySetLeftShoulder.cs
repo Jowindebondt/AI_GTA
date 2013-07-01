@@ -21,13 +21,23 @@ namespace GTA
 
         public override double CalculateDom(double value)
         {
-            if ((RightOffset == 0.0d && PeekPoint == value))
-                return 1.0d;
-            if (value <= PeekPoint && value > (PeekPoint - RightOffset))
-                return (1.0d / RightOffset) * (value - (PeekPoint - RightOffset));
-            if (value > PeekPoint)
-                return 1.0d;
-            return 0.0d;
+            if (((RightOffset == 0.0) && (PeekPoint == value)) ||
+               ((LeftOffset == 0.0) && (PeekPoint == value)))
+                Dom = 1.0d;
+            else if ((value >= PeekPoint) && (value < (PeekPoint + RightOffset)))
+                Dom = (1.0d / -RightOffset) * (value - PeekPoint) + 1;
+            else if ((value < PeekPoint) && (value >= PeekPoint - LeftOffset))
+                Dom = 1.0d;
+            else
+                Dom = 0.0d;
+            return Dom;
         }
+
+        public override double GetDom()
+        {
+            return Dom;
+        }
+
+      
     }
 }

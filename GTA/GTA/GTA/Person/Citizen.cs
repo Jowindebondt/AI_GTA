@@ -28,31 +28,43 @@ namespace GTA
             Bradius = 16;
             Brain = new Think(this);
             Brain.Activate();
+            Strength = 0;
 
-//             fm = new FuzzyModule();
-// 
-//             Fuzzy_Desirability = fm.CreateFLV("Desirability");
-//             FuzzySet Low_Desirability = Fuzzy_Desirability.AddLeftShoulderSet("Low", 0, 100, 200);
-//             FuzzySet Average_Desirability = Fuzzy_Desirability.AddTriangleSet("Average", 125, 250, 375);
-//             FuzzySet Very_Desirability = Fuzzy_Desirability.AddRightShoulderSet("Very", 350, 400, 500);
-//             
-//             Fuzzy_DistanceToTarget = fm.CreateFLV("Distance to Target");
-//             FuzzySet TargetClose = Fuzzy_DistanceToTarget.AddLeftShoulderSet("TargetClose", 0, 50, 150);
-//             FuzzySet TargetMedium = Fuzzy_DistanceToTarget.AddTriangleSet("TargetMedium", 25, 50, 300);
-//             FuzzySet TargetFar = Fuzzy_DistanceToTarget.AddRightShoulderSet("TargetFar", 150, 300, 500);
-// 
-//             Fuzzy_Strength = fm.CreateFLV("Strength");
-//             FuzzySet Weak_Strength = Fuzzy_Strength.AddLeftShoulderSet("Weak", 0, 10, 50);
-//             FuzzySet Average_Strength = Fuzzy_Strength.AddTriangleSet("Average", 25, 50, 75);
-//             FuzzySet Strong_Strength = Fuzzy_Strength.AddRightShoulderSet("Strong", 50, 75, 100);
-// 
-//             fm.AddRule(new FuzzyAnd(), );
+            fm = new FuzzyModule();
 
+            Fuzzy_Desirability = fm.CreateFLV("Desirability");
+            FuzzySet Low_Desirability = Fuzzy_Desirability.AddLeftShoulderSet("Low", 0, 100, 200);
+            FuzzySet Average_Desirability = Fuzzy_Desirability.AddTriangleSet("Average", 100, 200, 375);
+            FuzzySet Very_Desirability = Fuzzy_Desirability.AddRightShoulderSet("Very", 200, 375, 500);
+            
+            Fuzzy_DistanceToTarget = fm.CreateFLV("Distance to Target");
+            FuzzySet TargetClose = Fuzzy_DistanceToTarget.AddLeftShoulderSet("TargetClose", 0, 300, 800);
+            FuzzySet TargetMedium = Fuzzy_DistanceToTarget.AddTriangleSet("TargetMedium", 300, 800, 1300);
+            FuzzySet TargetFar = Fuzzy_DistanceToTarget.AddRightShoulderSet("TargetFar", 800, 1300, 1600);
+
+            Fuzzy_Strength = fm.CreateFLV("Strength");
+            FuzzySet Weak_Strength = Fuzzy_Strength.AddLeftShoulderSet("Weak", 0, 10000, 50000);
+            FuzzySet Average_Strength = Fuzzy_Strength.AddTriangleSet("Average", 10000, 50000, 75000);
+            FuzzySet Strong_Strength = Fuzzy_Strength.AddRightShoulderSet("Strong", 50000, 75000, 100000);
+
+            fm.AddRule(new FuzzyAnd(Strong_Strength, TargetClose), Very_Desirability);
+            fm.AddRule(new FuzzyAnd(Strong_Strength, TargetMedium), Average_Desirability);
+            fm.AddRule(new FuzzyAnd(Strong_Strength, TargetFar), Low_Desirability);
+
+            fm.AddRule(new FuzzyAnd(Weak_Strength, TargetClose), Low_Desirability);
+            fm.AddRule(new FuzzyAnd(Weak_Strength, TargetMedium), Average_Desirability);
+            fm.AddRule(new FuzzyAnd(Weak_Strength, TargetFar), Very_Desirability);
+
+            fm.AddRule(new FuzzyAnd(Average_Strength, TargetMedium), Average_Desirability);
+            fm.AddRule(new FuzzyAnd(Average_Strength, TargetClose), Average_Desirability);
+            fm.AddRule(new FuzzyAnd(Average_Strength, TargetFar), Average_Desirability);
         }
 
         public override void Update(float timeElapsed)
         {
             TimeEllapsed = timeElapsed;
+
+            CalculateDistance();
             
             Brain.Arbitrate();
             Brain.Process();
@@ -106,6 +118,8 @@ namespace GTA
             if (Pos.Y > 900) { Pos = new Vector2D(Pos.X, 0);}
 
             _personTexture.UpdateFrame(TimeEllapsed);
+
+            Strength++;
         }
 
         public override void Render(SpriteBatch spriteBatch)
@@ -137,12 +151,27 @@ namespace GTA
             Font = content.Load<SpriteFont>("font");
         }
 
+        public override void CalculateDistance()
+        {
+            double distanceX = Pos.X - enemy.Pos.X;
+            double distanceY = Pos.Y - enemy.Pos.Y;
+
+            if (distanceX < 0)
+                distanceX *= -1;
+
+            if (distanceY < 0)
+                distanceY *= -1;
+
+            DistanceToTarget = Math.Sqrt(Math.Pow(distanceX, 2) + Math.Pow(distanceY, 2));
+        }
+
         public override bool isEnemyClose()
         {
             int radius = 200;
-            if (Pos.X - enemy.Pos.X < radius && Pos.X - enemy.Pos.X > -radius &&
-                Pos.Y - enemy.Pos.Y < radius && Pos.Y - enemy.Pos.Y > -radius)
+
+            if (DistanceToTarget < 200)
                 return true;
+
             return false;
         }
     }

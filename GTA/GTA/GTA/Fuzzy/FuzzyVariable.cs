@@ -55,7 +55,7 @@ namespace GTA
 
             foreach (var curSet in memberSets)
             {
-                bottom += curSet.Value.Dom;
+                bottom += curSet.Value.Dom; //DOM ISNT SET;
                 top += curSet.Value.RepresentativeValue * curSet.Value.Dom;
             }
 

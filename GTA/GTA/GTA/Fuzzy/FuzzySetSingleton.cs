@@ -23,5 +23,14 @@ namespace GTA
                 return 1.0;
             return 0.0;
         }
+
+        public override double GetDom()
+        {
+            return Dom;
+        }
+
+        public override void OrWithDom(double value)
+        {
+        }
     }
 }

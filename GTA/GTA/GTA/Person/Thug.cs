@@ -36,6 +36,11 @@ namespace GTA
             _personTexture.Load(graphicsDevice, content, "people2", Frames, FramesPerSec);
         }
 
+        public override void CalculateDistance()
+        {
+            throw new NotImplementedException();
+        }
+
         public override bool isEnemyClose()
         {
             throw new NotImplementedException();

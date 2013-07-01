@@ -17,16 +17,15 @@ namespace GTA
             StatusOfGoal = Status.Active;
             Owner.AStar = true;
 
-            Node startnode;
+            Node startnode = null;
+            Node endnode = null;
 
-            Node endnode; =
-
-            while (startnode != null)
+            while (startnode == null)
                 startnode = World.GetInstance()._graph.GetNodeFromPoint(((int) (Owner.Pos.X/32)*32),
                                                                         (int) (Owner.Pos.Y/32)*32);
-            while (endnode != null)
+            while (endnode == null)
                 endnode = World.GetInstance()._graph.GetNodeFromPoint((int) (Owner.SafeHouse.X/32)*32,
-                                                                      (int) (Owner.SafeHouse.Y/32)*32;
+                                                                      (int) (Owner.SafeHouse.Y/32)*32);
             Owner.SteeringBehaviors.CreateListAStar(startnode, endnode);
         }
 

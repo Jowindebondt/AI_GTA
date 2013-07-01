@@ -61,9 +61,9 @@ namespace GTA
             ExploreTargets = new Queue<Vector2D>();
 
             ExploreTargets.Enqueue(new Vector2D(100,100)); //Left-Top
-            ExploreTargets.Enqueue(new Vector2D(100, 500));//Left-Bottom
-            ExploreTargets.Enqueue(new Vector2D(800, 500));//Mid-Bottom
-            ExploreTargets.Enqueue(new Vector2D(800, 100));//Mid-Top
+            ExploreTargets.Enqueue(new Vector2D(100, 500)); //Left-Bottom
+            ExploreTargets.Enqueue(new Vector2D(800, 500)); //Mid-Bottom
+            ExploreTargets.Enqueue(new Vector2D(800, 100)); //Mid-Top
             ExploreTargets.Enqueue(new Vector2D(1500, 100)); //Right-Top
             ExploreTargets.Enqueue(new Vector2D(1500, 500)); //Right-Bottom
             ExploreTargets.Enqueue(new Vector2D(800, 450)); //Mid-Mid
@@ -195,7 +195,7 @@ namespace GTA
 
         private Vector2D Seek(Vector2D target)
         {
-            int radius = 50;
+            int radius = 60;
 
             if (_entity.Pos.X - target.X < radius && _entity.Pos.X - target.X > -radius &&
                 _entity.Pos.Y - target.Y < radius && _entity.Pos.Y - target.Y > -radius)
@@ -445,7 +445,9 @@ namespace GTA
             World.GetInstance().TagAgentsWithinViewRange(_entity, m_dViewDistance);
             World.GetInstance().TagObstaclesWithinViewRange(_entity, m_dDBoxLength);
 
-            m_vSteeringForce += ObstacleAvoidance(World.GetInstance().ObstacleEntities) * m_dWeightObstacleAvoidance;
+            if(!useAStar)
+                m_vSteeringForce += ObstacleAvoidance(World.GetInstance().ObstacleEntities) * m_dWeightObstacleAvoidance;
+            
             m_vSteeringForce += Separation(World.GetInstance().MovingEntities) * m_dWeightSeparation;
 
             if (useWander)
